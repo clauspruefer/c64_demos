@@ -11,8 +11,8 @@ This made me think about (with PC dev skills in mind) programming some kind of o
 
 I currently plan a 2 Part Demo consisting of:
 
-- Sine-Movement and Cubes
-- Borderless FLD with Rasterbars
+- Sine-Movement And Cubes
+- Borderless FLD With Rasterbars
 
 ## Release Plan
 
