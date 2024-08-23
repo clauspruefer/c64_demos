@@ -17,3 +17,18 @@ I currently plan a 2 Part Demo consisting of:
 ## Release Plan
 
 Think about 10 weeks until both parts are finished. This sounds realistic with multiple ongoing projects.
+
+## Prerequisite
+
+Download the following Windows Software.
+
+- C64 Studio @ [https://www.georg-rottensteiner.de/de/c64.html](https://www.georg-rottensteiner.de/de/c64.html) 
+- VICE C64 Emulator [https://vice-emu.sourceforge.io/](https://vice-emu.sourceforge.io/)
+
+Optional install ACME assembler, but C64 Studio should be sufficient.
+
+## Test Simple Raster IRQs
+
+Load and compile the following `test.asm` file.
+
+https://github.com/clauspruefer/c64_demos/blob/63eb7739bcd38a5e3cfc1150fbe610ddf1ec08c5/test.asm#L1-L87
