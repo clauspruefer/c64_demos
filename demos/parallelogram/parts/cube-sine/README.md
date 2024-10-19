@@ -149,7 +149,8 @@ lbl_sprite1_2
   sty $d006
 ```
 
-Changing the values from "oustside" now is possible by:
+Changing the values (data at the last line) from "oustside" with position data
+(256 bytes) at $2100 now is possible by:
 
 ```assembly
 sprite1_sin
