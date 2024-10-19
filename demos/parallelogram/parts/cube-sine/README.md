@@ -69,7 +69,7 @@ Row21 "*           "
 # Rastersplit
 
 So, to achieve having 4 individual "moving" pixel per raster line, we need to
-"switch" 4 sprites X-Psotion ($d000, $d002, $d004 and $d006).
+"switch" 4 sprites X-Position ($d000, $d002, $d004 and $d006).
 
 "Impossible!" someone could say regarding the "Bad-Raster-Line" problem sucking
 up clock cycles.
