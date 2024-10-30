@@ -84,17 +84,17 @@ vector-objects :)
 The next graph exactly shows what we have achieved so far.
 
 ```bash
-#Line1   ||||     ||||         ||||      ||||   \ == 1 Sprite Pixel
-#Line2   ||||     ||||         ||||      ||||   /
+#Line1   ||||     ||||         ||||      ||||   \ == 2 Height Pixel
+#Line2   ||||     ||||         ||||      ||||   / independ. movable
 -------------------------------------------------------------------
-#Line3    ||||      ||||     ||||      ||||     \ == 1 Sprite Pixel
-#Line4    ||||      ||||     ||||      ||||     /
+#Line3    ||||      ||||     ||||      ||||     \ == 2 Height Pixel
+#Line4    ||||      ||||     ||||      ||||     / independ. movable
 -------------------------------------------------------------------
-#Line5     ||||     ||||     ||||      ||||     \ == 1 Sprite Pixel
-#Line6     ||||     ||||     ||||      ||||     /
+#Line5     ||||     ||||     ||||      ||||     \ == 2 Height Pixel
+#Line6     ||||     ||||     ||||      ||||     / independ. movable
 -------------------------------------------------------------------
-#Line7    ||||       ||||   ||||     ||||       \ == 1 Sprite Pixel
-#Line8    ||||       ||||   ||||     ||||       /
+#Line7    ||||       ||||   ||||     ||||       \ == 2 Height Pixel
+#Line8    ||||       ||||   ||||     ||||       / independ. movable
 ```
 
 > Each 2 Lines 4 Pixels that can be positioned (moved) individually.
