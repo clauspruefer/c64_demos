@@ -8,7 +8,7 @@ The screen will be divided into 3 parts.
 
 1. Top "VectorObject, SpritesOverlay Scroller"
 2. 2x2 character "Standard-Scroller"
-3. Arcanoid Game "Dummy"
+3. Character "pixelation" animation
 
 # Sprites
 
