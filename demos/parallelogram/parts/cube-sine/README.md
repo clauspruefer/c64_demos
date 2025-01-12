@@ -157,6 +157,5 @@ sprite1_sin
   ldx #0
   lda $2100,x
   sta lbl_sprite39_1+1
-  ;inc sprite1_sin+1
   inc sprite1_sin+1
 ```
