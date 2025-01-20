@@ -3,6 +3,7 @@
 Part #1 is called "Cube with Sprite-Pixel Sine Overlay".
 
 ./prg contains a running (very limited) executable ($0801).
+Integrated music by c0zmo / Padua.
 
 # Layout
 
