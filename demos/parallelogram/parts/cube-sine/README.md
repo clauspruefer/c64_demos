@@ -2,6 +2,8 @@
 
 Part #1 is called "Cube with Sprite-Pixel Sine Overlay".
 
+./prg contains a running (very limited) executable ($0801).
+
 # Layout
 
 The screen will be divided into 3 parts.
