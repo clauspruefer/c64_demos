@@ -1,5 +1,5 @@
 # c64_demos
-Demos for PC C64 Emulator **Vice**.
+Demos for PC C64 Emulator **Vice** and native C64 **Hardware**.
 
 ## Download / Install
 Download at https://vice-emu.sourceforge.io/.
