@@ -1,4 +1,4 @@
-# c64_demos
+# C64 Demos
 Demos for PC C64 Emulator **Vice** and native C64 **Hardware**.
 
 ## Download / Install
