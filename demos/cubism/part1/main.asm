@@ -1,4 +1,4 @@
-!to "parallelogram.prg", cbm
+!to "cubism-part1.prg", cbm
 *=$0801
 !BASIC
 
