@@ -11,4 +11,4 @@ The following demos are made for fun and competition.
 First demo after over 10 years of C64 abscence. It will be a certified
 "hitmen" release featuring apx. 10 parts coded by TWF himself (https://csdb.dk/scener/?id=3003).
 
-Restructuring, link to repo following.
+Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
