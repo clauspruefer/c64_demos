@@ -1,32 +1,89 @@
-!to "cubism-part1.prg", cbm
+!to "cubism-part2.prg", cbm
 *=$0801
 !BASIC
 
-jmp main
-
-*=$0bfe
-!bin "c0zmo_cinque1.dat"
-
-*=$2400
-
-main
-
-; clear screen
-  lda #$20
+; copy logo chars / banks
   ldx #0
-clrloop
-  sta $0400, x
-  sta $0500, x
-  sta $0600, x
-  sta $0700, x
+clrloop1
+  lda $5400+3, x
+  sta $4800, x
+  lda $5400+3+40, x
+  sta $4800+40, x
+  lda $5400+3+80, x
+  sta $4800+80, x
+  lda $5400+3+120, x
+  sta $4800+120, x
+  lda $5400+3+160, x
+  sta $4800+160, x
+  lda $5400+3+200, x
+  sta $4800+200, x
+  lda $5400+3+240, x
+  sta $4800+240, x
+  lda $5400+3+280, x
+  sta $4800+280, x
+  lda $5400+3+320, x
+  sta $4800+320, x
+  inx
+  cpx #37
+  bne clrloop1
+
+  ldx #0
+clrloop2
+  lda $5400+2, x
+  sta $4c00, x
+  lda $5400+2+40, x
+  sta $4c00+40, x
+  lda $5400+2+80, x
+  sta $4c00+80, x
+  lda $5400+2+120, x
+  sta $4c00+120, x
+  lda $5400+2+160, x
+  sta $4c00+160, x
+  lda $5400+2+200, x
+  sta $4c00+200, x
+  lda $5400+2+240, x
+  sta $4c00+240, x
+  lda $5400+2+280, x
+  sta $4c00+280, x
+  lda $5400+2+320, x
+  sta $4c00+320, x
+  inx
+  cpx #37
+  bne clrloop2
+
+  ldx #0
+clrloop3
+  lda $5400+1, x
+  sta $5000, x
+  lda $5400+1+40, x
+  sta $5000+40, x
+  lda $5400+1+80, x
+  sta $5000+80, x
+  lda $5400+1+120, x
+  sta $5000+120, x
+  lda $5400+1+160, x
+  sta $5000+160, x
+  lda $5400+1+200, x
+  sta $5000+200, x
+  lda $5400+1+240, x
+  sta $5000+240, x
+  lda $5400+1+280, x
+  sta $5000+280, x
+  lda $5400+1+320, x
+  sta $5000+320, x
+  inx
+  cpx #37
+  bne clrloop3
+
+; set character color gray
+  lda #$0c
+  ldx #0
+clrloop4
+  sta $d800, x
+  sta $d900, x
   dex
-  bne clrloop
-
-; init sound
-
-  lda #0
-  jsr $0c00
-
+  bne clrloop4
+  
 ; setup interrupt / timer
   sei
 
@@ -42,8 +99,8 @@ clrloop
   sta $dc0d
   sta $dd0d
 
-; set interrupt on raster line 48 @top visible screen
-  lda #48
+; set interrupt on raster line 50 @top visible screen
+  lda #50
   sta $d012
 
 ; set interrupt address
@@ -52,501 +109,76 @@ clrloop
   sta $0314
   stx $0315
 
-; set global sprite 2x height pixels
-  lda #%11111111
-  sta $d017
-
-; set global sprite 1x width pixels
-  lda #%00000000
-  sta $d01d
-
-; set global sprite multicolor
-  sta $d01c
-
-; set global sprite colors
-
-  ldx #15
-  stx $d027
-  ldx #3
-  stx $d028
-
-  ldx #14
-  stx $d029
-  ldx #3
-  stx $d02a
-
-; set sprite start y position(s)
-  lda #50
-  sta $d001
-  sta $d003
-  sta $d005
-  sta $d007
-
-; set x-pos hi bit
-  lda #%00000000
-  sta $d010
-
-; sprite text front / back pos
-
-  lda #%00000000
-  sta $d01b
-
-; enable sprite display 1-4
-  lda #%00001111
-  sta $d015
-
-; reset all sprite data pointer
-
-  lda #$80
-  sta $07f8
-  sta $07f9
-  sta $07fa
-  sta $07fb
-  sta $07fc
-  sta $07fd
-  sta $07fe
-  sta $07ff
-
-; reset all sprite x position
-
-  lda #0
-  sta $d000
-  sta $d002
-  sta $d004
-  sta $d006
-  sta $d008
-  sta $d00a
-  sta $d00c
-  sta $d00e
-
-; enable raster irq mode
+; enable raster irq mode from VIC
   lda #%00000001
   sta $d01a
 
-; clear interrupts
+; init sound
+  lda #1
+  jsr $0d2c
 
   cli
 
 endless
   jmp endless
 
-!align 255,0
-
+* = $2000
 irq
 
-; raster line 1 - sprites x pos
+; "set" vic bank to $4000
 
-  lda #50
-  sta $d001
-  sta $d003
-  sta $d005
-  sta $d007
+  lda #%00000010
+  sta $dd00
 
-; timing
-
-  nop
-  nop
-
-top_vector_scroll
-  lda #0
-  sta $d016
-
-top_character_set
-  lda #21
-  sta $d018
-
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; raster bar color (1 pixel)
-
-  lda #1
-  sta $d021
-  sta $d020
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; timing
-
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; sprite x position data
-
-lbl_sprite1_1
-  ldx #0
-  ldy #0
-
-  stx $d000
-  sty $d002
-
-lbl_sprite1_2
-  ldx #0
-  ldy #0
-
-  stx $d004
-  sty $d006
-
-; background raster col #2
-
-lbl_barcol1
-  lda #0
-
+  lda #$0c
   sta $d020
   sta $d021
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; raster line 2 - sprites x pos
-
-lbl_sprite2_1
-  ldx #0
-  ldy #0
-
-  stx $d000
-  sty $d002
-
-lbl_sprite2_2
-  ldx #0
-  ldy #0
-
-  stx $d004
-  sty $d006
-
-; background raster col #3
-
-lbl_barcol2
-  lda #0
-
-  sta $d020
-  sta $d021
-
-; timing
-
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; raster line 3 - sprites x pos
-
-lbl_sprite3_1
-  ldx #0
-  ldy #0
-
-  stx $d000
-  sty $d002
-
-lbl_sprite3_2
-  ldx #0
-  ldy #0
-
-  stx $d004
-  sty $d006
-
-; background raster col
-
-lbl_barcol3
-  lda #0
-
-  sta $d020
-  sta $d021
-
-; timing
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; raster line 4 - sprites x pos
-
-lbl_sprite4_1
-  ldx #0
-  ldy #0
-
-  stx $d004
-  sty $d006
-
-lbl_sprite4_2
-  ldx #0
-  ldy #0
-
-  stx $d000
-  sty $d002
-
-; background raster col #2
-
-lbl_barcol4
-  lda #0
-
-  sta $d020
-  sta $d021
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-  nop
-  nop
-  nop
-
-; include script pre-calculated code
-
-!src "rbars-gen-code-spritestop.asm"
-
-; multiplex y-sprites
-
-  lda #50+(2*21)
-  sta $d001
-  sta $d003
-  sta $d005
-  sta $d007
-
-!src "rbars-gen-code-spritesbottom.asm"
-
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
-; reset background raster col to background col
-
-  lda #0
-  sta $d020
-  sta $d021
-
-; move sprites to border (non visible)
-
-  sta $d000
-  sta $d002
-  sta $d004
-  sta $d006
-
-; process sin test
-
-!src "rasterbar-copy-processing.asm"
-
-sprite1_sin
-  ldx #0
-  lda $2100,x
-sprite1_sin_add
-  adc #1
-  sta lbl_sprite39_1+1
-  ;inc sprite1_sin+1
-  inc sprite1_sin+1
-  inc sprite1_sin_add+1
-
-sprite2_sin
-  ldx #3
-  ;ldx #100
-  lda $2100,x
-sprite2_sin_add
-  adc #10
-  sta lbl_sprite39_1+3
-  inc sprite2_sin+1
-  ;dec sprite2_sin+1
-  inc sprite2_sin_add+1
-
-sprite3_sin
-  ldx #6
-  lda $2100,x
-  sta lbl_sprite39_2+1
-  inc sprite3_sin+1
-  ;inc sprite3_sin+1
-
-sprite4_sin
-  ldx #9
-  lda $2100,x
-  ;adc #100
-  sta lbl_sprite39_2+3
-  inc sprite4_sin+1
-  ;dec sprite4_sin+1
-  ;dec sprite4_sin+1
-
-!src "sin-processing.asm"
-
-raster_scroll
-  ldx #0
-  lda $2200,x
-  lda #6
-  sta lbl_barcol1+1
   
-  inc raster_scroll+1
-  ;inc raster_scroll+1
-  ;inc raster_scroll+1
+  nop
+  nop
+  nop
+  nop
+
+!src "rasterline-opcodes-out.asm"
+!src "copy-data.asm"
+
+d016_sin
+  ldx #0
+  lda $3e00,x
+  sta scroll_offset1+1
+  inc d016_sin+1
+
+d018_sin
+  ldx #0
+  lda $3f00,x
+  ;sta charset_map_offset1+1
+  inc d018_sin+1
+
+  ;lda #64
+  ;sta charset_map_offset1+1
+
+; ack interrupt / clear VIC interrupt flag
+  
+  asl $d019
 
 ; play sound
 
-  jsr $0c03
-
-; ack interrupt / clear VIC interrupt flag
-
-  asl $d019
-
+  jsr $0d83
+ 
 ; finish interrupt (ea81 == ommit keyboard, cursor handling)
   jmp $ea81
 
-* = $2000
-!src "sprite-data.i"
+* = $0c6a
+!bin "Iron_Lord.sid"
 
-* = $2100
-!src "sinus-sprite-pixel-data.i"
+* = $3e00
+!src "sinus-d016-data.i"
 
-* = $2200
+* = $3f00
+;!src "sinus-d018-data.i"
 
-!src "rasterbarcolor-data.i"
+* = $4000
+!bin "hitmenlogo-charset.bin"
+
+* = $5400
+!bin "hitmenlogo-charmap.bin"
