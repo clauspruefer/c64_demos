@@ -19,6 +19,7 @@ Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 - [Sprite Registers](https://www.c64brain.com/commodore-64-sprite-registers/)
 - [Screen RAM Registers](https://www.c64-wiki.com/wiki/Screen_RAM)
 - [Extended Color Mode](https://www.c64-wiki.com/wiki/Extended_color_mode)
+- [Guide To Stable Raster IRQ](http://www.antimon.org/dl/c64/code/stable.txt)
 - [Retropixels Online Image Converter](https://www.micheldebree.nl/retropixels/)
 - [FLI Mode+$d011 Explained](https://www.retro-programming.de/programming/nachschlagewerk/vic-ii/vic-ii-grafikmodes-fli/)
 - [Fieser Wolf (C64 Legend) - Useful Tools](https://github.com/fieserWolF/)
