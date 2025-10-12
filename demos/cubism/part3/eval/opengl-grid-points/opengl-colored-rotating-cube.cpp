@@ -34,12 +34,10 @@ namespace Cube {
       {1.0, 0.8, 0.8}, {0.6, 1.0, 0.5}, {1.0, 0.5, 1.0}, {1.0, 1.0, 0.2}};
 
     void draw() {
-      glBegin(GL_QUADS);
-      for (int i = 0; i < NUM_FACES; i++) {
-        for (int j = 0; j < 4; j++) {
-          glColor3fv((GLfloat*)&vertexColors[faces[i][j]]);
-          glVertex3iv((GLint*)&vertices[faces[i][j]]);
-        }
+      glBegin(GL_POINTS);
+      for (int i = 0; i < NUM_VERTICES; i++) {
+        glColor3fv((GLfloat*)&vertexColors[i]);
+        glVertex3iv((GLint*)&vertices[i]);
       }
       glEnd();
     }
@@ -48,8 +46,6 @@ namespace Cube {
 void display() {
 
     glClear(GL_COLOR_BUFFER_BIT);
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glRotatef(rotateAngle, 0.5, 0.8, 0.8);
 
