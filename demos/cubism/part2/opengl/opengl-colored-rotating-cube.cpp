@@ -63,6 +63,35 @@ void display() {
     glReadPixels(50, 50, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixels);
     cout << "Pixel R:" << static_cast<int>(pixels[0]) << " G:"  << static_cast<int>(pixels[1]) << " B:" << static_cast<int>(pixels[2]) << endl;
 
+    //- Project all 8 cube coordinates to window coordinates using gluProject
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLint viewport[4];
+    
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    
+    GLdouble projectedCoords[Cube::NUM_VERTICES][3];
+    
+    for (int i = 0; i < Cube::NUM_VERTICES; i++) {
+        gluProject(
+            (GLdouble)Cube::vertices[i][0], 
+            (GLdouble)Cube::vertices[i][1], 
+            (GLdouble)Cube::vertices[i][2],
+            modelview, 
+            projection, 
+            viewport,
+            &projectedCoords[i][0], 
+            &projectedCoords[i][1], 
+            &projectedCoords[i][2]
+        );
+        cout << "Vertex " << i << " -> Window coords: (" 
+             << projectedCoords[i][0] << ", " 
+             << projectedCoords[i][1] << ", " 
+             << projectedCoords[i][2] << ")" << endl;
+    }
+
     glPopMatrix();
     glFlush();
 
