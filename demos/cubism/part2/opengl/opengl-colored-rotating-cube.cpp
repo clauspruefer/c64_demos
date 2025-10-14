@@ -75,6 +75,34 @@ void display() {
     GLdouble projectedCoords[Cube::NUM_VERTICES][3];
     
     for (int i = 0; i < Cube::NUM_VERTICES; i++) {
+        // Transform vertex to clip space to check for clipping
+        GLdouble vertex[4] = {
+            (GLdouble)Cube::vertices[i][0],
+            (GLdouble)Cube::vertices[i][1],
+            (GLdouble)Cube::vertices[i][2],
+            1.0
+        };
+        
+        // Apply modelview transform
+        GLdouble eye[4] = {0, 0, 0, 0};
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 4; k++) {
+                eye[j] += modelview[k*4 + j] * vertex[k];
+            }
+        }
+        
+        // Apply projection transform to get clip coordinates
+        GLdouble clip[4] = {0, 0, 0, 0};
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 4; k++) {
+                clip[j] += projection[k*4 + j] * eye[k];
+            }
+        }
+        
+        // Check if z-coordinate is clipped
+        // In clip space, a point is clipped if: z < -w (behind near) or z > w (beyond far)
+        bool isClipped = (clip[2] < -clip[3]) || (clip[2] > clip[3]);
+        
         gluProject(
             (GLdouble)Cube::vertices[i][0], 
             (GLdouble)Cube::vertices[i][1], 
@@ -89,7 +117,9 @@ void display() {
         cout << "Vertex " << i << " -> Window coords: (" 
              << projectedCoords[i][0] << ", " 
              << projectedCoords[i][1] << ", " 
-             << projectedCoords[i][2] << ")" << endl;
+             << projectedCoords[i][2] << ")"
+             << " | Clip-space z/w: " << (clip[2] / clip[3])
+             << " | Clipped: " << (isClipped ? "YES" : "NO") << endl;
     }
 
     glPopMatrix();
