@@ -45,6 +45,22 @@ namespace Cube {
     }
 }
 
+// Check if a pixel at given (x, y, z) coordinates is visible (not behind front cube surfaces)
+bool isPixelVisible(GLdouble x, GLdouble y, GLdouble z, GLdouble projectedCoords[][3], int numVertices) {
+    // Find the minimum z-value among all vertices (closest to camera)
+    GLdouble minZ = projectedCoords[0][2];
+    for (int i = 1; i < numVertices; i++) {
+        if (projectedCoords[i][2] < minZ) {
+            minZ = projectedCoords[i][2];
+        }
+    }
+    
+    // A pixel is considered visible if its z-coordinate is close to the front-most vertices
+    // Using a threshold to account for floating point precision
+    const GLdouble threshold = 0.3; // Adjust based on cube depth
+    return (z - minZ) <= threshold;
+}
+
 void display() {
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -86,10 +102,21 @@ void display() {
             &projectedCoords[i][1], 
             &projectedCoords[i][2]
         );
+        
+        // Check if this vertex is visible
+        bool visible = isPixelVisible(
+            projectedCoords[i][0], 
+            projectedCoords[i][1], 
+            projectedCoords[i][2],
+            projectedCoords,
+            Cube::NUM_VERTICES
+        );
+        
         cout << "Vertex " << i << " -> Window coords: (" 
              << projectedCoords[i][0] << ", " 
              << projectedCoords[i][1] << ", " 
-             << projectedCoords[i][2] << ")" << endl;
+             << projectedCoords[i][2] << ") - Visible: " 
+             << (visible ? "true" : "false") << endl;
     }
 
     glPopMatrix();
