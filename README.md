@@ -16,6 +16,7 @@ Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 # Useful External Links
 - [C64 Studio IDE](https://www.georg-rottensteiner.de/de/c64.html)
 - [Codebase64](https://codebase64.org/)
+- [C64 Retro Programnming](https://www.retro-programming.de)
 - [Sprite Registers](https://www.c64brain.com/commodore-64-sprite-registers/)
 - [Screen RAM Registers](https://www.c64-wiki.com/wiki/Screen_RAM)
 - [Extended Color Mode](https://www.c64-wiki.com/wiki/Extended_color_mode)
