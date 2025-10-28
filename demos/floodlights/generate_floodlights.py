@@ -10,40 +10,45 @@ import sys
 import os
 from PIL import Image
 
-# C64 Pepto palette - optimized for gradients
-# Order: black -> dark colors -> medium -> bright
-PEPTO_GRADIENT = [
-    0x00,  # 0 - Black
-    0x0b,  # 1 - Dark grey  
-    0x0c,  # 2 - Medium grey
-    0x02,  # 3 - Red (shadow edge)
-    0x0f,  # 4 - Light grey
-    0x09,  # 5 - Brown (warm shadow)
-    0x08,  # 6 - Orange (medium light)
-    0x0a,  # 7 - Light red (bright edge)
-    0x07,  # 8 - Yellow (bright center)
-    0x01,  # 9 - White (hotspot)
-]
+# 32-color gradient - smooth transition from black to bright
+# Creating a custom gradient with 32 steps
+GRADIENT = list(range(32))
 
-# C64 Pepto palette RGB values for PNG export
-# Based on Pepto's palette: http://www.pepto.de/projects/colorvic/
-PEPTO_RGB = {
-    0x00: (0, 0, 0),           # Black
-    0x01: (255, 255, 255),     # White
-    0x02: (136, 0, 0),         # Red
-    0x03: (170, 255, 238),     # Cyan
-    0x04: (204, 68, 204),      # Purple
-    0x05: (0, 204, 85),        # Green
-    0x06: (0, 0, 170),         # Blue
-    0x07: (238, 238, 119),     # Yellow
-    0x08: (221, 136, 85),      # Orange
-    0x09: (102, 68, 0),        # Brown
-    0x0a: (255, 119, 119),     # Light Red
-    0x0b: (51, 51, 51),        # Dark Grey
-    0x0c: (119, 119, 119),     # Medium Grey
-    0x0d: (170, 255, 102),     # Light Green
-    0x0e: (0, 136, 255),       # Light Blue
-    0x0f: (187, 187, 187),     # Light Grey
+# RGB values for 32-color gradient
+# Smooth transition: black -> dark red/brown -> orange -> yellow -> white
+GRADIENT_RGB = {
+    0: (0, 0, 0),           # Black
+    1: (16, 0, 0),          # Very dark red
+    2: (32, 0, 0),          # Dark red
+    3: (48, 0, 0),          
+    4: (64, 8, 0),          
+    5: (80, 16, 0),         # Dark brown
+    6: (96, 24, 0),         
+    7: (112, 32, 0),        
+    8: (128, 40, 0),        # Brown
+    9: (144, 56, 0),        
+    10: (160, 72, 8),       
+    11: (176, 88, 16),      # Orange-brown
+    12: (192, 104, 24),     
+    13: (208, 120, 32),     # Orange
+    14: (224, 136, 48),     
+    15: (240, 152, 64),     
+    16: (255, 168, 80),     # Bright orange
+    17: (255, 176, 96),     
+    18: (255, 184, 112),    
+    19: (255, 192, 128),    # Light orange
+    20: (255, 200, 144),    
+    21: (255, 208, 160),    # Orange-yellow
+    22: (255, 216, 176),    
+    23: (255, 224, 192),    # Light yellow
+    24: (255, 232, 208),    
+    25: (255, 240, 224),    
+    26: (255, 244, 232),    # Near white
+    27: (255, 248, 240),    
+    28: (255, 250, 245),    
+    29: (255, 252, 250),    
+    30: (255, 254, 252),    
+    31: (255, 255, 255),    # White
 }
 
 # Animation parameters
@@ -134,18 +139,18 @@ def calculate_shadow(x, y, circles_data):
 
 def intensity_to_color(intensity, shadow_factor):
     """
-    Convert intensity value to C64 color index
+    Convert intensity value to gradient color index
     intensity: 0.0 to 1.0
     shadow_factor: 0.0 (full shadow) to 1.0 (no shadow)
     """
     # Apply shadow
     final_intensity = intensity * shadow_factor
     
-    # Map to gradient palette
-    palette_index = int(final_intensity * (len(PEPTO_GRADIENT) - 1))
-    palette_index = max(0, min(len(PEPTO_GRADIENT) - 1, palette_index))
+    # Map to gradient palette (32 colors)
+    palette_index = int(final_intensity * (len(GRADIENT) - 1))
+    palette_index = max(0, min(len(GRADIENT) - 1, palette_index))
     
-    return PEPTO_GRADIENT[palette_index]
+    return GRADIENT[palette_index]
 
 def generate_frame(frame_num, circles):
     """Generate one frame of animation"""
@@ -220,7 +225,7 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
             # Get color for this character
             char_index = char_y * WIDTH + char_x
             color_index = frame_data[char_index]
-            rgb_color = PEPTO_RGB.get(color_index, (0, 0, 0))
+            rgb_color = GRADIENT_RGB.get(color_index, (0, 0, 0))
             
             # Fill 8x8 pixel block with this color
             for py in range(CHAR_SIZE_PIXELS):
