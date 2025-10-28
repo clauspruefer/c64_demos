@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate C64 floodlight animation data
-Creates a single zooming circle with greyscale gradient
+Creates a single zooming circle with C64 color gradient
 Output: 32x10 character screen (320 bytes color RAM data)
 """
 
@@ -10,21 +10,33 @@ import sys
 import os
 from PIL import Image
 
-# 9-color greyscale gradient - smooth transition from black to white
-GRADIENT = list(range(9))
+# 9-color C64 gradient using specific C64 palette colors
+# Mapping: 0->black, 1->brown, 2->dark grey, 3->orange, 4->mid grey, 5->light red, 6->light grey, 7->light green, 8->white
+GRADIENT = [0x00, 0x09, 0x0b, 0x08, 0x0c, 0x0a, 0x0f, 0x0d, 0x01]
 
-# RGB values for 9-color greyscale gradient
-GRADIENT_RGB = {
-    0: (0, 0, 0),           # Black
-    1: (32, 32, 32),        # Very dark grey
-    2: (64, 64, 64),        # Dark grey
-    3: (96, 96, 96),        # Medium-dark grey
-    4: (128, 128, 128),     # Medium grey
-    5: (160, 160, 160),     # Medium-light grey
-    6: (192, 192, 192),     # Light grey
-    7: (224, 224, 224),     # Very light grey
-    8: (255, 255, 255),     # White
+# RGB values for C64 colors (Pepto palette)
+# Based on Pepto's palette: http://www.pepto.de/projects/colorvic/
+C64_PALETTE_RGB = {
+    0x00: (0, 0, 0),           # Black
+    0x01: (255, 255, 255),     # White
+    0x02: (136, 0, 0),         # Red
+    0x03: (170, 255, 238),     # Cyan
+    0x04: (204, 68, 204),      # Purple
+    0x05: (0, 204, 85),        # Green
+    0x06: (0, 0, 170),         # Blue
+    0x07: (238, 238, 119),     # Yellow
+    0x08: (221, 136, 85),      # Orange
+    0x09: (102, 68, 0),        # Brown
+    0x0a: (255, 119, 119),     # Light Red
+    0x0b: (51, 51, 51),        # Dark Grey
+    0x0c: (119, 119, 119),     # Medium Grey
+    0x0d: (170, 255, 102),     # Light Green
+    0x0e: (0, 136, 255),       # Light Blue
+    0x0f: (187, 187, 187),     # Light Grey
 }
+
+# Create gradient RGB mapping from the gradient indices
+GRADIENT_RGB = {i: C64_PALETTE_RGB[color] for i, color in enumerate(GRADIENT)}
 
 # Animation parameters
 WIDTH = 32  # characters
@@ -119,7 +131,7 @@ def write_asm_data(frames_data, output_file):
     """Write frame data as ACME assembly include file"""
     with open(output_file, 'w') as f:
         f.write('; Floodlight animation data\n')
-        f.write('; 3 moving and zooming circles with shadows\n')
+        f.write('; Single zooming circle with C64 color gradient\n')
         f.write('; {} frames, {}x{} characters ({} bytes per frame)\n\n'.format(
             len(frames_data), WIDTH, HEIGHT, WIDTH * HEIGHT))
         
@@ -149,7 +161,7 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
     Each character is represented as an 8x8 pixel block with ordered dithering
     
     Args:
-        frame_data: List of color indices for each character (WIDTH * HEIGHT elements)
+        frame_data: List of C64 color values for each character (WIDTH * HEIGHT elements)
         frame_num: Frame number for filename
         output_dir: Directory path to save the PNG file
     """
@@ -164,16 +176,25 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
     # Convert character colors to pixels with dithering
     for char_y in range(HEIGHT):
         for char_x in range(WIDTH):
-            # Get color for this character
+            # Get C64 color value for this character
             char_index = char_y * WIDTH + char_x
-            color_index = frame_data[char_index]
+            c64_color = frame_data[char_index]
             
-            # Get base RGB color
-            base_rgb = GRADIENT_RGB.get(color_index, (0, 0, 0))
+            # Find the gradient index for this C64 color
+            try:
+                gradient_index = GRADIENT.index(c64_color)
+            except ValueError:
+                gradient_index = 0  # Fallback to black if color not found
             
-            # Determine next lighter color for dithering
-            next_color_index = min(color_index + 1, len(GRADIENT) - 1)
-            next_rgb = GRADIENT_RGB.get(next_color_index, base_rgb)
+            # Get base RGB color from C64 palette
+            base_rgb = C64_PALETTE_RGB.get(c64_color, (0, 0, 0))
+            
+            # Determine next color in gradient for dithering
+            if gradient_index < len(GRADIENT) - 1:
+                next_c64_color = GRADIENT[gradient_index + 1]
+                next_rgb = C64_PALETTE_RGB.get(next_c64_color, base_rgb)
+            else:
+                next_rgb = base_rgb
             
             # Fill 8x8 pixel block with dithered color
             for py in range(CHAR_SIZE_PIXELS):
@@ -183,7 +204,7 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
                     
                     # Apply ordered dithering using Bayer matrix
                     # If color is at max, no dithering needed
-                    if color_index < len(GRADIENT) - 1:
+                    if gradient_index < len(GRADIENT) - 1:
                         threshold = BAYER_MATRIX_8x8[py][px]
                         # Use threshold to decide between base and next color
                         # This creates a dithered pattern
