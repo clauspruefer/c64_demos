@@ -2,7 +2,7 @@
 """
 Generate C64 floodlight animation data
 Creates a single zooming circle with C64 color gradient
-Output: 32x10 character screen (320 bytes color RAM data)
+Output: 32x25 character screen (800 bytes color RAM data)
 """
 
 import math
@@ -40,22 +40,10 @@ GRADIENT_RGB = {i: C64_PALETTE_RGB[color] for i, color in enumerate(GRADIENT)}
 
 # Animation parameters
 WIDTH = 32  # characters
-HEIGHT = 10  # characters
-FRAMES = 16  # number of animation frames
+HEIGHT = 25  # characters (full C64 screen)
+FRAMES = 60  # number of animation frames
 NUM_CIRCLES = 1  # Single circle
 CHAR_SIZE_PIXELS = 8  # Each character is 8x8 pixels in the output PNG
-
-# 8x8 Bayer dithering matrix for ordered dithering
-BAYER_MATRIX_8x8 = [
-    [ 0, 32,  8, 40,  2, 34, 10, 42],
-    [48, 16, 56, 24, 50, 18, 58, 26],
-    [12, 44,  4, 36, 14, 46,  6, 38],
-    [60, 28, 52, 20, 62, 30, 54, 22],
-    [ 3, 35, 11, 43,  1, 33,  9, 41],
-    [51, 19, 59, 27, 49, 17, 57, 25],
-    [15, 47,  7, 39, 13, 45,  5, 37],
-    [63, 31, 55, 23, 61, 29, 53, 21]
-]
 
 class Circle:
     """Represents a single zooming circle at screen center"""
@@ -68,17 +56,19 @@ class Circle:
         x = WIDTH / 2
         y = HEIGHT / 2
         
-        # Radius grows linearly from very small to large over all frames
-        min_radius = 0.5
-        max_radius = 12.0
+        # Radius grows linearly from small to large covering the full screen
+        # Adjusted for 32x25 resolution
+        min_radius = 1.0
+        max_radius = 20.0
         radius = min_radius + (max_radius - min_radius) * (frame / (FRAMES - 1))
         
         return x, y, radius
 
-def calculate_intensity(x, y, circles_data):
+def calculate_intensity(x, y, circles_data, frame_num):
     """
     Calculate light intensity at position (x, y) from the circle
     Returns value 0.0 (dark) to 1.0 (bright)
+    Increases white color weight from the first frame
     """
     # Single circle - extract position and radius
     cx, cy, radius = circles_data[0]
@@ -94,6 +84,12 @@ def calculate_intensity(x, y, circles_data):
         intensity = max(0.0, 1.0 - (distance / (radius * 1.5)))
         # Square the falloff for more dramatic effect
         intensity = intensity * intensity
+        
+        # Boost white color weight progressively from first frame
+        # This makes brighter colors appear earlier and stronger
+        white_boost = 0.3 + (frame_num / FRAMES) * 0.2  # 0.3 to 0.5 boost
+        intensity = min(1.0, intensity + white_boost)
+        
         return intensity
     
     return 0.0
@@ -104,6 +100,7 @@ def intensity_to_color(intensity):
     intensity: 0.0 to 1.0
     """
     # Map to gradient palette (9 colors)
+    # Bias towards brighter colors
     palette_index = int(intensity * (len(GRADIENT) - 1))
     palette_index = max(0, min(len(GRADIENT) - 1, palette_index))
     
@@ -119,7 +116,7 @@ def generate_frame(frame_num, circle):
     for y in range(HEIGHT):
         for x in range(WIDTH):
             # Calculate intensity from the circle
-            intensity = calculate_intensity(x, y, circles_data)
+            intensity = calculate_intensity(x, y, circles_data, frame_num)
             
             # Convert to color
             color = intensity_to_color(intensity)
@@ -157,8 +154,8 @@ def write_asm_data(frames_data, output_file):
 
 def save_frame_as_png(frame_data, frame_num, output_dir):
     """
-    Save a single frame as PNG image with dithering
-    Each character is represented as an 8x8 pixel block with ordered dithering
+    Save a single frame as PNG image with rasterbuster-style dithering
+    Each character is represented as an 8x8 pixel block with 2x2 checkerboard dithering
     
     Args:
         frame_data: List of C64 color values for each character (WIDTH * HEIGHT elements)
@@ -173,7 +170,7 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
     img = Image.new('RGB', (pixel_width, pixel_height))
     pixels = img.load()
     
-    # Convert character colors to pixels with dithering
+    # Convert character colors to pixels with rasterbuster-style dithering
     for char_y in range(HEIGHT):
         for char_x in range(WIDTH):
             # Get C64 color value for this character
@@ -196,19 +193,19 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
             else:
                 next_rgb = base_rgb
             
-            # Fill 8x8 pixel block with dithered color
+            # Fill 8x8 pixel block with rasterbuster-style dithered color (2x2 checkerboard)
             for py in range(CHAR_SIZE_PIXELS):
                 for px in range(CHAR_SIZE_PIXELS):
                     pixel_x = char_x * CHAR_SIZE_PIXELS + px
                     pixel_y = char_y * CHAR_SIZE_PIXELS + py
                     
-                    # Apply ordered dithering using Bayer matrix
+                    # Apply rasterbuster-style dithering (2x2 checkerboard pattern)
                     # If color is at max, no dithering needed
                     if gradient_index < len(GRADIENT) - 1:
-                        threshold = BAYER_MATRIX_8x8[py][px]
-                        # Use threshold to decide between base and next color
-                        # This creates a dithered pattern
-                        if threshold < 32:  # Half the matrix values are < 32
+                        # Simple 2x2 checkerboard pattern
+                        # This creates the characteristic rasterbuster look
+                        is_checkerboard = (px % 2) ^ (py % 2)
+                        if is_checkerboard:
                             pixels[pixel_x, pixel_y] = next_rgb
                         else:
                             pixels[pixel_x, pixel_y] = base_rgb
