@@ -51,6 +51,7 @@ WIDTH = 32  # characters
 HEIGHT = 10  # characters
 FRAMES = 64  # number of animation frames (reduced for memory constraints)
 NUM_CIRCLES = 3
+CHAR_SIZE_PIXELS = 8  # Each character is 8x8 pixels in the output PNG
 
 class Circle:
     """Represents a floodlight circle with position and size"""
@@ -199,10 +200,15 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
     """
     Save a single frame as PNG image
     Each character is represented as an 8x8 pixel block
+    
+    Args:
+        frame_data: List of color indices for each character (WIDTH * HEIGHT elements)
+        frame_num: Frame number for filename
+        output_dir: Directory path to save the PNG file
     """
-    # Create 8x8 pixel blocks for each character
-    pixel_width = WIDTH * 8
-    pixel_height = HEIGHT * 8
+    # Create image with 8x8 pixel blocks for each character
+    pixel_width = WIDTH * CHAR_SIZE_PIXELS
+    pixel_height = HEIGHT * CHAR_SIZE_PIXELS
     
     # Create RGB image
     img = Image.new('RGB', (pixel_width, pixel_height))
@@ -217,10 +223,10 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
             rgb_color = PEPTO_RGB.get(color_index, (0, 0, 0))
             
             # Fill 8x8 pixel block with this color
-            for py in range(8):
-                for px in range(8):
-                    pixel_x = char_x * 8 + px
-                    pixel_y = char_y * 8 + py
+            for py in range(CHAR_SIZE_PIXELS):
+                for px in range(CHAR_SIZE_PIXELS):
+                    pixel_x = char_x * CHAR_SIZE_PIXELS + px
+                    pixel_y = char_y * CHAR_SIZE_PIXELS + py
                     pixels[pixel_x, pixel_y] = rgb_color
     
     # Save image
