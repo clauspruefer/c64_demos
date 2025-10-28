@@ -29,9 +29,21 @@ GRADIENT_RGB = {
 # Animation parameters
 WIDTH = 32  # characters
 HEIGHT = 10  # characters
-FRAMES = 50  # number of animation frames
+FRAMES = 16  # number of animation frames
 NUM_CIRCLES = 1  # Single circle
 CHAR_SIZE_PIXELS = 8  # Each character is 8x8 pixels in the output PNG
+
+# 8x8 Bayer dithering matrix for ordered dithering
+BAYER_MATRIX_8x8 = [
+    [ 0, 32,  8, 40,  2, 34, 10, 42],
+    [48, 16, 56, 24, 50, 18, 58, 26],
+    [12, 44,  4, 36, 14, 46,  6, 38],
+    [60, 28, 52, 20, 62, 30, 54, 22],
+    [ 3, 35, 11, 43,  1, 33,  9, 41],
+    [51, 19, 59, 27, 49, 17, 57, 25],
+    [15, 47,  7, 39, 13, 45,  5, 37],
+    [63, 31, 55, 23, 61, 29, 53, 21]
+]
 
 class Circle:
     """Represents a single zooming circle at screen center"""
@@ -44,7 +56,7 @@ class Circle:
         x = WIDTH / 2
         y = HEIGHT / 2
         
-        # Radius grows linearly from very small to large over 50 frames
+        # Radius grows linearly from very small to large over all frames
         min_radius = 0.5
         max_radius = 12.0
         radius = min_radius + (max_radius - min_radius) * (frame / (FRAMES - 1))
@@ -133,8 +145,8 @@ def write_asm_data(frames_data, output_file):
 
 def save_frame_as_png(frame_data, frame_num, output_dir):
     """
-    Save a single frame as PNG image
-    Each character is represented as an 8x8 pixel block
+    Save a single frame as PNG image with dithering
+    Each character is represented as an 8x8 pixel block with ordered dithering
     
     Args:
         frame_data: List of color indices for each character (WIDTH * HEIGHT elements)
@@ -149,20 +161,38 @@ def save_frame_as_png(frame_data, frame_num, output_dir):
     img = Image.new('RGB', (pixel_width, pixel_height))
     pixels = img.load()
     
-    # Convert character colors to pixels
+    # Convert character colors to pixels with dithering
     for char_y in range(HEIGHT):
         for char_x in range(WIDTH):
             # Get color for this character
             char_index = char_y * WIDTH + char_x
             color_index = frame_data[char_index]
-            rgb_color = GRADIENT_RGB.get(color_index, (0, 0, 0))
             
-            # Fill 8x8 pixel block with this color
+            # Get base RGB color
+            base_rgb = GRADIENT_RGB.get(color_index, (0, 0, 0))
+            
+            # Determine next lighter color for dithering
+            next_color_index = min(color_index + 1, len(GRADIENT) - 1)
+            next_rgb = GRADIENT_RGB.get(next_color_index, base_rgb)
+            
+            # Fill 8x8 pixel block with dithered color
             for py in range(CHAR_SIZE_PIXELS):
                 for px in range(CHAR_SIZE_PIXELS):
                     pixel_x = char_x * CHAR_SIZE_PIXELS + px
                     pixel_y = char_y * CHAR_SIZE_PIXELS + py
-                    pixels[pixel_x, pixel_y] = rgb_color
+                    
+                    # Apply ordered dithering using Bayer matrix
+                    # If color is at max, no dithering needed
+                    if color_index < len(GRADIENT) - 1:
+                        threshold = BAYER_MATRIX_8x8[py][px]
+                        # Use threshold to decide between base and next color
+                        # This creates a dithered pattern
+                        if threshold < 32:  # Half the matrix values are < 32
+                            pixels[pixel_x, pixel_y] = next_rgb
+                        else:
+                            pixels[pixel_x, pixel_y] = base_rgb
+                    else:
+                        pixels[pixel_x, pixel_y] = base_rgb
     
     # Save image
     filename = os.path.join(output_dir, f'frame_{frame_num:04d}.png')
