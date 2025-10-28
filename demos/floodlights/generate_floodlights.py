@@ -7,6 +7,8 @@ Output: 32x10 character screen (320 bytes color RAM data)
 
 import math
 import sys
+import os
+from PIL import Image
 
 # C64 Pepto palette - optimized for gradients
 # Order: black -> dark colors -> medium -> bright
@@ -22,6 +24,27 @@ PEPTO_GRADIENT = [
     0x07,  # 8 - Yellow (bright center)
     0x01,  # 9 - White (hotspot)
 ]
+
+# C64 Pepto palette RGB values for PNG export
+# Based on Pepto's palette: http://www.pepto.de/projects/colorvic/
+PEPTO_RGB = {
+    0x00: (0, 0, 0),           # Black
+    0x01: (255, 255, 255),     # White
+    0x02: (136, 0, 0),         # Red
+    0x03: (170, 255, 238),     # Cyan
+    0x04: (204, 68, 204),      # Purple
+    0x05: (0, 204, 85),        # Green
+    0x06: (0, 0, 170),         # Blue
+    0x07: (238, 238, 119),     # Yellow
+    0x08: (221, 136, 85),      # Orange
+    0x09: (102, 68, 0),        # Brown
+    0x0a: (255, 119, 119),     # Light Red
+    0x0b: (51, 51, 51),        # Dark Grey
+    0x0c: (119, 119, 119),     # Medium Grey
+    0x0d: (170, 255, 102),     # Light Green
+    0x0e: (0, 136, 255),       # Light Blue
+    0x0f: (187, 187, 187),     # Light Grey
+}
 
 # Animation parameters
 WIDTH = 32  # characters
@@ -172,6 +195,39 @@ def write_asm_data(frames_data, output_file):
             if frame_idx < len(frames_data) - 1:
                 f.write('\n')
 
+def save_frame_as_png(frame_data, frame_num, output_dir):
+    """
+    Save a single frame as PNG image
+    Each character is represented as an 8x8 pixel block
+    """
+    # Create 8x8 pixel blocks for each character
+    pixel_width = WIDTH * 8
+    pixel_height = HEIGHT * 8
+    
+    # Create RGB image
+    img = Image.new('RGB', (pixel_width, pixel_height))
+    pixels = img.load()
+    
+    # Convert character colors to pixels
+    for char_y in range(HEIGHT):
+        for char_x in range(WIDTH):
+            # Get color for this character
+            char_index = char_y * WIDTH + char_x
+            color_index = frame_data[char_index]
+            rgb_color = PEPTO_RGB.get(color_index, (0, 0, 0))
+            
+            # Fill 8x8 pixel block with this color
+            for py in range(8):
+                for px in range(8):
+                    pixel_x = char_x * 8 + px
+                    pixel_y = char_y * 8 + py
+                    pixels[pixel_x, pixel_y] = rgb_color
+    
+    # Save image
+    filename = os.path.join(output_dir, f'frame_{frame_num:04d}.png')
+    img.save(filename)
+
+
 def main():
     print(f"Generating floodlight animation...")
     print(f"  Screen size: {WIDTH}x{HEIGHT} characters")
@@ -181,6 +237,12 @@ def main():
     # Create circle objects
     circles = [Circle(i) for i in range(NUM_CIRCLES)]
     
+    # Create output directory for PNG frames
+    frames_dir = 'frames'
+    if not os.path.exists(frames_dir):
+        os.makedirs(frames_dir)
+        print(f"Created directory: {frames_dir}/")
+    
     # Generate all frames
     print("Generating frames...")
     frames_data = []
@@ -189,6 +251,9 @@ def main():
             print(f"  Frame {frame}/{FRAMES}...")
         frame_data = generate_frame(frame, circles)
         frames_data.append(frame_data)
+        
+        # Save frame as PNG
+        save_frame_as_png(frame_data, frame, frames_dir)
     
     # Write output file
     output_file = 'floodlights-data.i'
@@ -197,6 +262,8 @@ def main():
     
     print(f"Done! Generated {len(frames_data)} frames")
     print(f"Total data size: {len(frames_data) * WIDTH * HEIGHT} bytes")
+    print(f"PNG frames saved to: {frames_dir}/")
+
 
 if __name__ == '__main__':
     main()
