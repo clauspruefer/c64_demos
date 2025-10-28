@@ -1,0 +1,22 @@
+# Compiled C64 programs
+*.prg
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Generated data files (keep .i files as they're needed for assembly)
+# *.i
+
+# Build artifacts
+*.o
+*.obj
+*.lst
+
+# Editor backup files
+*~
+*.swp
+*.swo
+.DS_Store
