@@ -1,145 +1,125 @@
 #!/usr/bin/env python3
 """
 Generate C64 floodlight animation data
-Creates 3 moving and zooming circles with shadows and gradients
-Output: 32x10 character screen (320 bytes color RAM data)
+Creates a single zooming circle with C64 color gradient
+Output: 32x25 character screen (800 bytes color RAM data)
 """
 
 import math
 import sys
+import os
+from PIL import Image
 
-# C64 Pepto palette - optimized for gradients
-# Order: black -> dark colors -> medium -> bright
-PEPTO_GRADIENT = [
-    0x00,  # 0 - Black
-    0x0b,  # 1 - Dark grey  
-    0x0c,  # 2 - Medium grey
-    0x02,  # 3 - Red (shadow edge)
-    0x0f,  # 4 - Light grey
-    0x09,  # 5 - Brown (warm shadow)
-    0x08,  # 6 - Orange (medium light)
-    0x0a,  # 7 - Light red (bright edge)
-    0x07,  # 8 - Yellow (bright center)
-    0x01,  # 9 - White (hotspot)
-]
+# 9-color C64 gradient using specific C64 palette colors
+# Mapping: 0->black, 1->brown, 2->dark grey, 3->orange, 4->mid grey, 5->light red, 6->light grey, 7->light green, 8->white
+GRADIENT = [0x00, 0x09, 0x0b, 0x08, 0x0c, 0x0a, 0x0f, 0x0d, 0x01]
+
+# RGB values for C64 colors (Pepto palette)
+# Based on Pepto's palette: http://www.pepto.de/projects/colorvic/
+C64_PALETTE_RGB = {
+    0x00: (0, 0, 0),           # Black
+    0x01: (255, 255, 255),     # White
+    0x02: (136, 0, 0),         # Red
+    0x03: (170, 255, 238),     # Cyan
+    0x04: (204, 68, 204),      # Purple
+    0x05: (0, 204, 85),        # Green
+    0x06: (0, 0, 170),         # Blue
+    0x07: (238, 238, 119),     # Yellow
+    0x08: (221, 136, 85),      # Orange
+    0x09: (102, 68, 0),        # Brown
+    0x0a: (255, 119, 119),     # Light Red
+    0x0b: (51, 51, 51),        # Dark Grey
+    0x0c: (119, 119, 119),     # Medium Grey
+    0x0d: (170, 255, 102),     # Light Green
+    0x0e: (0, 136, 255),       # Light Blue
+    0x0f: (187, 187, 187),     # Light Grey
+}
+
+# Create gradient RGB mapping from the gradient indices
+GRADIENT_RGB = {i: C64_PALETTE_RGB[color] for i, color in enumerate(GRADIENT)}
 
 # Animation parameters
 WIDTH = 32  # characters
-HEIGHT = 10  # characters
-FRAMES = 64  # number of animation frames (reduced for memory constraints)
-NUM_CIRCLES = 3
+HEIGHT = 25  # characters (full C64 screen)
+FRAMES = 60  # number of animation frames
+NUM_CIRCLES = 1  # Single circle
+CHAR_SIZE_PIXELS = 8  # Each character is 8x8 pixels in the output PNG
 
 class Circle:
-    """Represents a floodlight circle with position and size"""
-    def __init__(self, index):
-        self.index = index
-        # Each circle has different frequency for variation
-        self.freq_x = 0.02 + index * 0.007
-        self.freq_y = 0.015 + index * 0.005
-        self.freq_size = 0.025 + index * 0.008
-        # Phase offset for each circle
-        self.phase_x = index * math.pi * 0.66
-        self.phase_y = index * math.pi * 0.44
-        self.phase_size = index * math.pi * 0.33
+    """Represents a single zooming circle at screen center"""
+    def __init__(self):
+        pass
         
     def get_position_and_size(self, frame):
         """Calculate circle position and radius for given frame"""
-        # Position oscillates across the screen
-        x = WIDTH / 2 + math.sin(frame * self.freq_x + self.phase_x) * (WIDTH / 3)
-        y = HEIGHT / 2 + math.sin(frame * self.freq_y + self.phase_y) * (HEIGHT / 3)
+        # Circle stays at center of screen
+        x = WIDTH / 2
+        y = HEIGHT / 2
         
-        # Radius oscillates between min and max
-        min_radius = 3.0
-        max_radius = 10.0
-        radius = min_radius + (max_radius - min_radius) * (0.5 + 0.5 * math.sin(frame * self.freq_size + self.phase_size))
+        # Radius grows linearly from small to large covering the full screen
+        # Adjusted for 32x25 resolution
+        min_radius = 1.0
+        max_radius = 20.0
+        radius = min_radius + (max_radius - min_radius) * (frame / (FRAMES - 1))
         
         return x, y, radius
 
-def calculate_intensity(x, y, circles_data):
+def calculate_intensity(x, y, circles_data, frame_num):
     """
-    Calculate combined light intensity at position (x, y) from all circles
+    Calculate light intensity at position (x, y) from the circle
     Returns value 0.0 (dark) to 1.0 (bright)
+    Increases white color weight from the first frame
     """
-    total_intensity = 0.0
+    # Single circle - extract position and radius
+    cx, cy, radius = circles_data[0]
     
-    for cx, cy, radius in circles_data:
-        # Calculate distance from circle center
-        dx = x - cx
-        dy = y - cy
-        distance = math.sqrt(dx * dx + dy * dy)
+    # Calculate distance from circle center
+    dx = x - cx
+    dy = y - cy
+    distance = math.sqrt(dx * dx + dy * dy)
+    
+    # Calculate intensity based on distance (inverse square law approximation)
+    if distance < radius * 1.5:
+        # Intensity falls off with distance
+        intensity = max(0.0, 1.0 - (distance / (radius * 1.5)))
+        # Square the falloff for more dramatic effect
+        intensity = intensity * intensity
         
-        # Calculate intensity based on distance (inverse square law approximation)
-        if distance < radius * 1.5:
-            # Intensity falls off with distance
-            intensity = max(0.0, 1.0 - (distance / (radius * 1.5)))
-            # Square the falloff for more dramatic effect
-            intensity = intensity * intensity
-            total_intensity += intensity
+        # Boost white color weight progressively from first frame
+        # This makes brighter colors appear earlier and stronger
+        white_boost = 0.3 + (frame_num / FRAMES) * 0.2  # 0.3 to 0.5 boost
+        intensity = min(1.0, intensity + white_boost)
+        
+        return intensity
     
-    # Clamp to [0, 1]
-    return min(1.0, total_intensity)
+    return 0.0
 
-def calculate_shadow(x, y, circles_data):
+def intensity_to_color(intensity):
     """
-    Calculate shadow factor based on circle occlusion
-    Returns value 0.0 (full shadow) to 1.0 (no shadow)
-    """
-    shadow_factor = 1.0
-    
-    # Simple shadow: if point is between two circles, create shadow
-    if len(circles_data) >= 2:
-        for i, (cx1, cy1, r1) in enumerate(circles_data):
-            for cx2, cy2, r2 in circles_data[i+1:]:
-                # Calculate if point is in shadow zone between circles
-                dx1 = x - cx1
-                dy1 = y - cy1
-                dx2 = x - cx2
-                dy2 = y - cy2
-                
-                dist1 = math.sqrt(dx1*dx1 + dy1*dy1)
-                dist2 = math.sqrt(dx2*dx2 + dy2*dy2)
-                
-                # If close to both circles but not in their bright zones
-                if dist1 > r1 * 0.7 and dist2 > r2 * 0.7:
-                    # Check if between them
-                    circle_dist = math.sqrt((cx1-cx2)**2 + (cy1-cy2)**2)
-                    if dist1 + dist2 < circle_dist * 1.4:
-                        shadow_factor *= 0.6
-    
-    return shadow_factor
-
-def intensity_to_color(intensity, shadow_factor):
-    """
-    Convert intensity value to C64 color index
+    Convert intensity value to gradient color index
     intensity: 0.0 to 1.0
-    shadow_factor: 0.0 (full shadow) to 1.0 (no shadow)
     """
-    # Apply shadow
-    final_intensity = intensity * shadow_factor
+    # Map to gradient palette (9 colors)
+    # Bias towards brighter colors
+    palette_index = int(intensity * (len(GRADIENT) - 1))
+    palette_index = max(0, min(len(GRADIENT) - 1, palette_index))
     
-    # Map to gradient palette
-    palette_index = int(final_intensity * (len(PEPTO_GRADIENT) - 1))
-    palette_index = max(0, min(len(PEPTO_GRADIENT) - 1, palette_index))
-    
-    return PEPTO_GRADIENT[palette_index]
+    return GRADIENT[palette_index]
 
-def generate_frame(frame_num, circles):
+def generate_frame(frame_num, circle):
     """Generate one frame of animation"""
-    # Get all circle positions and sizes for this frame
-    circles_data = [c.get_position_and_size(frame_num) for c in circles]
+    # Get circle position and size for this frame
+    circles_data = [circle.get_position_and_size(frame_num)]
     
     # Generate color data for each character position
     frame_data = []
     for y in range(HEIGHT):
         for x in range(WIDTH):
-            # Calculate intensity from all circles
-            intensity = calculate_intensity(x, y, circles_data)
-            
-            # Calculate shadow factor
-            shadow = calculate_shadow(x, y, circles_data)
+            # Calculate intensity from the circle
+            intensity = calculate_intensity(x, y, circles_data, frame_num)
             
             # Convert to color
-            color = intensity_to_color(intensity, shadow)
+            color = intensity_to_color(intensity)
             frame_data.append(color)
     
     return frame_data
@@ -148,7 +128,7 @@ def write_asm_data(frames_data, output_file):
     """Write frame data as ACME assembly include file"""
     with open(output_file, 'w') as f:
         f.write('; Floodlight animation data\n')
-        f.write('; 3 moving and zooming circles with shadows\n')
+        f.write('; Single zooming circle with C64 color gradient\n')
         f.write('; {} frames, {}x{} characters ({} bytes per frame)\n\n'.format(
             len(frames_data), WIDTH, HEIGHT, WIDTH * HEIGHT))
         
@@ -172,23 +152,97 @@ def write_asm_data(frames_data, output_file):
             if frame_idx < len(frames_data) - 1:
                 f.write('\n')
 
+def save_frame_as_png(frame_data, frame_num, output_dir):
+    """
+    Save a single frame as PNG image with rasterbuster-style dithering
+    Each character is represented as an 8x8 pixel block with 2x2 checkerboard dithering
+    
+    Args:
+        frame_data: List of C64 color values for each character (WIDTH * HEIGHT elements)
+        frame_num: Frame number for filename
+        output_dir: Directory path to save the PNG file
+    """
+    # Create image with 8x8 pixel blocks for each character
+    pixel_width = WIDTH * CHAR_SIZE_PIXELS
+    pixel_height = HEIGHT * CHAR_SIZE_PIXELS
+    
+    # Create RGB image
+    img = Image.new('RGB', (pixel_width, pixel_height))
+    pixels = img.load()
+    
+    # Convert character colors to pixels with rasterbuster-style dithering
+    for char_y in range(HEIGHT):
+        for char_x in range(WIDTH):
+            # Get C64 color value for this character
+            char_index = char_y * WIDTH + char_x
+            c64_color = frame_data[char_index]
+            
+            # Find the gradient index for this C64 color
+            try:
+                gradient_index = GRADIENT.index(c64_color)
+            except ValueError:
+                gradient_index = 0  # Fallback to black if color not found
+            
+            # Get base RGB color from C64 palette
+            base_rgb = C64_PALETTE_RGB.get(c64_color, (0, 0, 0))
+            
+            # Determine next color in gradient for dithering
+            if gradient_index < len(GRADIENT) - 1:
+                next_c64_color = GRADIENT[gradient_index + 1]
+                next_rgb = C64_PALETTE_RGB.get(next_c64_color, base_rgb)
+            else:
+                next_rgb = base_rgb
+            
+            # Fill 8x8 pixel block with rasterbuster-style dithered color (2x2 checkerboard)
+            for py in range(CHAR_SIZE_PIXELS):
+                for px in range(CHAR_SIZE_PIXELS):
+                    pixel_x = char_x * CHAR_SIZE_PIXELS + px
+                    pixel_y = char_y * CHAR_SIZE_PIXELS + py
+                    
+                    # Apply rasterbuster-style dithering (2x2 checkerboard pattern)
+                    # If color is at max, no dithering needed
+                    if gradient_index < len(GRADIENT) - 1:
+                        # Simple 2x2 checkerboard pattern
+                        # This creates the characteristic rasterbuster look
+                        is_checkerboard = (px % 2) ^ (py % 2)
+                        if is_checkerboard:
+                            pixels[pixel_x, pixel_y] = next_rgb
+                        else:
+                            pixels[pixel_x, pixel_y] = base_rgb
+                    else:
+                        pixels[pixel_x, pixel_y] = base_rgb
+    
+    # Save image
+    filename = os.path.join(output_dir, f'frame_{frame_num:04d}.png')
+    img.save(filename)
+
+
 def main():
     print(f"Generating floodlight animation...")
     print(f"  Screen size: {WIDTH}x{HEIGHT} characters")
     print(f"  Frames: {FRAMES}")
-    print(f"  Circles: {NUM_CIRCLES}")
+    print(f"  Single zooming circle")
     
-    # Create circle objects
-    circles = [Circle(i) for i in range(NUM_CIRCLES)]
+    # Create single circle
+    circle = Circle()
+    
+    # Create output directory for PNG frames
+    frames_dir = 'frames'
+    if not os.path.exists(frames_dir):
+        os.makedirs(frames_dir)
+        print(f"Created directory: {frames_dir}/")
     
     # Generate all frames
     print("Generating frames...")
     frames_data = []
     for frame in range(FRAMES):
-        if frame % 32 == 0:
+        if frame % 10 == 0:
             print(f"  Frame {frame}/{FRAMES}...")
-        frame_data = generate_frame(frame, circles)
+        frame_data = generate_frame(frame, circle)
         frames_data.append(frame_data)
+        
+        # Save frame as PNG
+        save_frame_as_png(frame_data, frame, frames_dir)
     
     # Write output file
     output_file = 'floodlights-data.i'
@@ -197,6 +251,8 @@ def main():
     
     print(f"Done! Generated {len(frames_data)} frames")
     print(f"Total data size: {len(frames_data) * WIDTH * HEIGHT} bytes")
+    print(f"PNG frames saved to: {frames_dir}/")
+
 
 if __name__ == '__main__':
     main()

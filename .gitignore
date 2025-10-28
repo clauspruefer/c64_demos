@@ -10,6 +10,9 @@ __pycache__/
 # Generated data files (keep .i files as they're needed for assembly)
 # *.i
 
+# Generated PNG animation frames
+demos/floodlights/frames/
+
 # Build artifacts
 *.o
 *.obj
