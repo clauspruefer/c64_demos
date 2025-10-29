@@ -2,16 +2,17 @@
 """
 Generate double helix coordinates for OpenGL demo.
 Creates two virtual ropes wrapping around a cylinder with 180° phase offset.
+Reduced to 18 vertices total (9 per strand) for C64 demo performance.
 """
 
 import math
 
-def generate_double_helix_coordinates(num_points_per_strand=108, radius=8.0, height=30.0):
+def generate_double_helix_coordinates(num_points_per_strand=9, radius=8.0, height=30.0):
     """
     Generate coordinates for a double helix (two intertwined ropes).
     
     Args:
-        num_points_per_strand: Number of vertices per strand
+        num_points_per_strand: Number of vertices per strand (default: 9)
         radius: Base radius of the cylinder
         height: Total height of the cylinder
     
@@ -73,12 +74,12 @@ def print_cpp_arrays(strand1, strand2):
         all_coords.append(strand2[i])
     
     for i, (x, y, z) in enumerate(all_coords):
-        if i % 4 == 0:
+        if i % 2 == 0:
             print("  ", end="")
         print(f"{{{x:3d}, {y:3d}, {z:3d}}}", end="")
         if i < len(all_coords) - 1:
             print(", ", end="")
-            if (i + 1) % 4 == 0:
+            if (i + 1) % 2 == 0:
                 print()
         else:
             print()
@@ -86,11 +87,12 @@ def print_cpp_arrays(strand1, strand2):
     print()
     print(f"// Generated {total} vertices for double helix (2 strands x {len(strand1)} vertices)")
     print(f"// Strands are interleaved: strand1[0], strand2[0], strand1[1], strand2[1], ...")
+    print(f"// Animation: 11.25 degrees per frame = 32 frames for complete 360° rotation")
 
 
 if __name__ == "__main__":
-    # Generate double helix with 108 vertices per strand
-    strand1, strand2 = generate_double_helix_coordinates(108, 8.0, 30.0)
+    # Generate double helix with 9 vertices per strand (18 total)
+    strand1, strand2 = generate_double_helix_coordinates(9, 8.0, 30.0)
     
     # Print in C++ format
     print_cpp_arrays(strand1, strand2)
