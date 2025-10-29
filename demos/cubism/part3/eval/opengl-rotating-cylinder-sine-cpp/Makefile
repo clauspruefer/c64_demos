@@ -1,10 +1,10 @@
-# Makefile for OpenGL Rotating Cylinder Sine Demo (Linux only)
+# Makefile for OpenGL Cylinder Helix Demo (Linux only)
 
 CXX = g++
 CXXFLAGS = -Wall -std=c++11
 LDFLAGS = -lGL -lGLU -lglut
-TARGET = opengl-rotating-cylinder-sine
-SRC = opengl-colored-rotating-cube-grid.cpp
+TARGET = opengl-cylinder-helix
+SRC = opengl-cylinder-helix.cpp
 
 all: $(TARGET)
 
