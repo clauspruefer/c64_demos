@@ -64,10 +64,10 @@ void display() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glRotatef(rotateAngle, 0.5, 0.8, 0.8);
+    glRotatef(rotateAngle, 0.0, 0.1, 0.0);
 
     Cylinder::draw();
-    rotateAngle += 2;
+    rotateAngle += 1;
     
     GLdouble retX, retY, retZ;
 
@@ -113,7 +113,7 @@ void display() {
 
 void timer(int v) {
   //static GLfloat u = 4.74;
-  static GLfloat u = 4.74;
+  static GLfloat u = 1.34;
   //u += 0.03;
   glLoadIdentity();
   gluLookAt(8*cos(u), 7*cos(u)-1, 4*cos(u/3)+2, .5, .5, .5, cos(u), 1, 0);
@@ -137,7 +137,7 @@ void init() {
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize(96, 80);
+  glutInitWindowSize(42, 252);
   glutCreateWindow("Precalculated Cylinder C64 Demo");
   //glutFullScreen();
   glutReshapeFunc(reshape);
