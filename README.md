@@ -13,18 +13,6 @@ First demo after over 10 years of C64 abscence. It will be a certified
 
 Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 
-## 2. Floodlights
-A mesmerizing animation featuring 3 moving and zooming circles acting as floodlights with dynamic shadows and color gradients. The demo showcases:
-- 3 independently moving circles with different motion patterns
-- Smooth zooming effects (in and out at different rates)
-- Overlapping circles that create morphing effects
-- Color gradients using the Pepto C64 palette
-- Dynamic shadow calculations
-- 32x10 character display (320 bytes in color RAM $d800)
-- 64 pre-calculated animation frames
-
-Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/floodlights.
-
 # Useful External Links
 - [C64 Studio IDE](https://www.georg-rottensteiner.de/de/c64.html)
 - [Codebase64](https://codebase64.org/)
