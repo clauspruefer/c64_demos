@@ -129,7 +129,7 @@ void display() {
     glRotatef(rotateAngle, 0.0, 0.1, 0.0);
 
     DoubleHelix::draw();
-    rotateAngle += 1;
+    rotateAngle += 5;
     
     GLdouble retX, retY, retZ;
 
@@ -178,9 +178,9 @@ void timer(int v) {
   // Position camera with angled view: cylinder farther in z at top, closer at bottom
   // Eye positioned at an angle to create perspective effect
   // Looking slightly downward from above to see the helix structure better
-  gluLookAt(0.0, 5.0, 55.0,     // Eye position (slightly above, far back)
+  gluLookAt(0.0, 35.0, 55.0,     // Eye position (slightly above, far back)
             0.0, 0.0, 0.0,       // Look at center of double helix
-            0.0, 1.0, 0.0);      // Up vector
+            0.0, 4.0, 0.0);      // Up vector
   glutPostRedisplay();
   glutTimerFunc(1000/FPS, timer, v);
 }
