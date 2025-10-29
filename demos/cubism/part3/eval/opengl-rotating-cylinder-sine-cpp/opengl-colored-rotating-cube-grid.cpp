@@ -134,11 +134,13 @@ void display() {
 }
 
 void timer(int v) {
-  //static GLfloat u = 4.74;
-  static GLfloat u = 0.52;
-  //u += 0.03;
   glLoadIdentity();
-  gluLookAt(12, 12, 12, .5, .5, .5, 1, 1, 0);
+  // Position camera to view the complete cylinder in 420x2520 window
+  // Cylinder: Y from -15 to +15 (height 30), X/Z from -9 to +9 (diameter ~18)
+  // Camera positioned along Z-axis, centered on cylinder at (0, 0, 0)
+  gluLookAt(0.0, 0.0, 50.0,    // Eye position (far enough to see full cylinder)
+            0.0, 0.0, 0.0,      // Look at center of cylinder
+            0.0, 1.0, 0.0);     // Up vector
   glutPostRedisplay();
   glutTimerFunc(1000/FPS, timer, v);
 }
@@ -147,7 +149,9 @@ void reshape(int w, int h) {
   glViewport(0, 0, w, h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0, GLfloat(w) / GLfloat(h), 0.5, 40.0);
+  // Adjust perspective to properly frame cylinder in tall window (420x2520)
+  // FOV adjusted to ensure full cylinder visibility
+  gluPerspective(45.0, GLfloat(w) / GLfloat(h), 0.5, 100.0);
   glMatrixMode(GL_MODELVIEW);
 }
 
