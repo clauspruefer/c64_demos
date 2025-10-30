@@ -27,6 +27,9 @@ demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
 
+# OpenGL textured cylinder tool executable
+tools/opengl-textured-cylinder/opengl-textured-cylinder
+
 # Editor backup files
 *~
 *.swp
