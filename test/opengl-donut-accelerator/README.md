@@ -1,25 +1,47 @@
 # OpenGL Donut Particle Accelerator
 
-This is a 3D OpenGL demonstration that renders a giant donut (torus) designed to look like a modern particle accelerator ring (similar to the Large Hadron Collider) with realistic technical details including computer terminals, magnets, detectors, beam pipes, cooling systems, and cable trays.
+This is a 3D OpenGL demonstration that renders a giant donut (torus) designed to look like a modern particle accelerator ring (similar to the Large Hadron Collider) with **real 3D geometric variations** on the surface and **multiple additional 3D structures** surrounding the main ring.
 
 ## Features
 
-- **Realistic Torus Geometry**: A mathematically generated donut shape with increased thickness for better visual appearance
-- **Advanced Procedural Texturing**: No external texture files needed - all visual effects are generated procedurally
-- **Particle Accelerator Components**:
-  - **Stainless steel beam pipe**: Outer surface with panel lines and rivets
-  - **Dipole magnets**: Alternating red/blue magnet sections (representing north/south poles)
-  - **Copper superconducting coils**: Visible coil windings on magnet sections
-  - **Detector/monitoring sections**: White sensor grid patterns for particle detection
-  - **Energy beam glow**: Bright blue pulsing glow on inner rim (simulating particle beam)
-  - **Cryogenic cooling pipes**: Blue horizontal lines representing liquid helium cooling
-  - **Cable trays**: Complex multi-colored power and signal cables (red, blue, yellow, green, black, white)
-  - **Control terminals**: Equipment racks with LED indicators (green status, red warnings)
-  - **LCD display screens**: Cyan displays with scrolling text effect
-  - **Panel edges and borders**: Realistic equipment housing
-- **Professional Lighting**: Three-point lighting system (key, fill, rim) for dramatic 3D depth
-- **Smooth Geometry**: 96×48 segment mesh (4,704 vertices) for smooth appearance
+### Main Torus with 3D Surface Geometry
+- **Realistic Torus Geometry**: Mathematically generated donut with actual geometric surface variations (not just textures!)
+- **Physical Surface Details** (X,Y,Z displacement):
+  - Equipment terminal boxes protruding 0.15 units from surface
+  - Magnet coil windings (physical ridges with sine wave pattern)
+  - Cooling pipe ridges (cylindrical cross-sections)
+  - Detector housing boxes
+  - Cable tray walls with individual cable bumps
+  - Beam pipe panel seams (indented grooves)
+  - Rivets/bolts (small raised bumps)
+
+### Additional 3D Structures (58+ Objects)
+- **8 Support Pillars**: Gray vertical supports below torus with connection brackets
+- **4 Vacuum Pump Stations**: Large equipment boxes with motors and connection pipes
+- **6 Power Supply Units**: Beige boxes with green LED indicators
+- **16 Cable Conduits**: Dark gray boxes running between equipment
+- **24 Diagnostic Sensor Arrays**: White sensor boxes mounted on top of torus
+- **Cryogenic Supply Lines**: Blue pipes running alongside the torus
+
+### Advanced Procedural Texturing
+No external texture files needed - all visual effects are generated procedurally:
+- Stainless steel beam pipe with panel lines
+- Alternating red/blue dipole magnets (32 sections)
+- Copper superconducting coils with visible windings
+- Detector/monitoring sections with sensor grids
+- Pulsing energy beam glow (bright blue inner rim)
+- Cryogenic cooling pipes (blue horizontal lines)
+- Multi-colored cable trays (red, blue, yellow, green, black, white cables)
+- Control terminals with LED indicators (green status, red warnings)
+- LCD display screens with scrolling text effect
+- Panel edges and equipment housing
+
+### Professional Rendering
+- **Three-Point Lighting System** (key, fill, rim lights) for dramatic 3D depth
+- **Smooth Geometry**: 96×48 segment mesh (4,704 vertices) for main torus
 - **Dynamic Camera**: Orbiting camera to show all angles of the 3D structure
+- **Material Properties**: High shininess (80.0) for metallic surfaces
+- **Depth Testing**: Proper 3D occlusion
 
 ## Visual Details
 
@@ -71,15 +93,43 @@ This demo is based on `demos/cubism/part2/opengl/opengl-colored-rotating-cube.cp
 
 ## Technical Details
 
-- **Major Radius**: 2.5 (distance from center to tube center)
-- **Minor Radius**: 0.8 (tube radius - thicker for better donut appearance)
-- **Segments**: 96 major segments × 48 minor segments
-- **Vertices**: 4,704 (97 × 49)
-- **Triangles**: 9,216 (96 × 48 × 2)
+- **Main Torus**:
+  - Major Radius: 2.5 (distance from center to tube center)
+  - Minor Radius: 0.8 + displacement (tube radius with 3D surface variations)
+  - Segments: 96 major segments × 48 minor segments
+  - Vertices: 4,704 (97 × 49)
+  - Triangles: 9,216 (96 × 48 × 2)
+  - Surface Displacement Range: -0.02 to +0.15 units
+- **Additional Structures**: 58+ separate 3D objects
 - **Window Size**: 800×600 pixels
 - **Frame Rate**: 60 FPS
 - **Rendering**: Triple-buffered with depth testing, smooth shading, and three-point lighting
 - **Lights**: Key light (top-right), fill light (left), rim light (back)
+
+## 3D Geometry Features
+
+### Surface Displacement Map
+The torus surface has real geometric variations (not just texture):
+
+```
+Terminal boxes:      +0.15 units (protrudes outward)
+Coil ridges:         ±0.02 units (sine wave pattern)
+Cooling pipes:       +0.04 units (cylindrical bumps)
+Detector housings:   +0.08 units (rectangular protrusions)
+Cable bumps:         +0.015 units (individual cables)
+Panel seams:         -0.02 units (indented grooves)
+Rivets:              +0.015 units (small bumps)
+```
+
+### Additional 3D Objects
+All objects are actual 3D geometry with proper normals and lighting:
+
+- **Support Pillars**: 8 boxes (0.15×0.15×1.0) with brackets (0.12×0.12×0.3)
+- **Vacuum Pumps**: 4 main housings (0.4×0.4×0.6) + motors (0.25×0.25×0.3) + connection pipes
+- **Power Supplies**: 6 boxes (0.3×0.3×0.4) + LED indicators (0.03×0.03×0.02)
+- **Cable Conduits**: 16 boxes (0.08×0.08×0.4)
+- **Sensor Arrays**: 24 boxes (0.12×0.12×0.08)
+- **Cryo Lines**: 4 pipes wrapping around torus (128 segments each)
 
 ## Improvements Over Original Version
 
