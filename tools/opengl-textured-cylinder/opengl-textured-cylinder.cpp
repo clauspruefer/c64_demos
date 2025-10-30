@@ -55,24 +55,31 @@ namespace DoubleHelix {
     }
 
     void drawTexturedSurface() {
-      // Draw textured surface connecting each strand to itself (creating a ribbon)
-      // We'll create two separate ribbons, one for each strand
+      // Draw textured surface connecting the two helix strands
+      // Map texture based on actual Y position (height) to ensure
+      // single texture from bottom to top regardless of spiral
       
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textureID);
       glColor3f(1.0f, 1.0f, 1.0f);  // White color to show texture properly
       
-      // Create a single ribbon connecting both strands
-      // Use GL_QUAD_STRIP where texture wraps around following the helix
+      // Find min and max Y coordinates for normalization
+      const float MIN_Y = -15.0f;
+      const float MAX_Y = 15.0f;
+      const float Y_RANGE = MAX_Y - MIN_Y;
+      
+      // Use GL_QUAD_STRIP to create a continuous surface
       glBegin(GL_QUAD_STRIP);
       
-      // Iterate through all vertices sequentially to follow the helix spiral
+      // Iterate through all vertices sequentially
       for (int i = 0; i < NUM_VERTICES; i++) {
         // Calculate texture coordinates
-        // s: wraps around as we follow the spiral (0.0 to 1.0 and repeat)
-        // t: goes from bottom to top (0.0 to 1.0)
-        float t = (float)i / (NUM_VERTICES - 1);
-        float s = (i % 2 == 0) ? 0.0f : 1.0f;  // Alternate between edges
+        // t: based on Y position (height) - 0.0 at bottom (y=-15), 1.0 at top (y=15)
+        float y = (float)vertices[i][1];
+        float t = (y - MIN_Y) / Y_RANGE;
+        
+        // s: alternate between edges to create the ribbon width
+        float s = (i % 2 == 0) ? 0.0f : 1.0f;
         
         glTexCoord2f(s, t);
         glVertex3iv((GLint*)&vertices[i]);
