@@ -55,47 +55,34 @@ namespace DoubleHelix {
     }
 
     void drawTexturedSurface() {
-      // Draw textured quads connecting the two helix strands
+      // Draw textured surface connecting the two helix strands
       // The vertices are arranged as: strand1[0], strand2[0], strand1[1], strand2[1], ...
-      // We create quads between consecutive pairs from each strand
+      // We create a continuous quad strip between the two strands
       
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textureID);
       glColor3f(1.0f, 1.0f, 1.0f);  // White color to show texture properly
       
-      // Draw quads connecting the two strands
-      // Each pair of vertices (i, i+1) represents a point on strand 1 and strand 2
-      // We connect them to the next pair to form quads
-      for (int i = 0; i < NUM_VERTICES - 2; i += 2) {
-        // Current pair: vertices[i] (strand1) and vertices[i+1] (strand2)
-        // Next pair: vertices[i+2] (strand1) and vertices[i+3] (strand2)
+      // Use GL_QUAD_STRIP to create a continuous surface with a single texture
+      // mapped from bottom to top
+      glBegin(GL_QUAD_STRIP);
+      
+      // Iterate through vertex pairs and create a strip
+      for (int i = 0; i < NUM_VERTICES; i += 2) {
+        // Calculate vertical texture coordinate (0.0 at bottom, 1.0 at top)
+        float t = (float)(i / 2) / (NUM_VERTICES / 2 - 1);
         
-        // Calculate texture coordinates based on vertical position
-        float t1 = (float)(i / 2) / (NUM_VERTICES / 2 - 1);
-        float t2 = (float)((i + 2) / 2) / (NUM_VERTICES / 2 - 1);
-        
-        glBegin(GL_QUADS);
-        
-        // Quad connecting the two strands at this level and next level
-        // Bottom-left: strand1 current
-        glTexCoord2f(0.0f, t1);
+        // Add both vertices of the pair (strand1 and strand2)
+        // Left edge (s=0.0)
+        glTexCoord2f(0.0f, t);
         glVertex3iv((GLint*)&vertices[i]);
         
-        // Bottom-right: strand2 current
-        glTexCoord2f(1.0f, t1);
+        // Right edge (s=1.0)
+        glTexCoord2f(1.0f, t);
         glVertex3iv((GLint*)&vertices[i + 1]);
-        
-        // Top-right: strand2 next
-        glTexCoord2f(1.0f, t2);
-        glVertex3iv((GLint*)&vertices[i + 3]);
-        
-        // Top-left: strand1 next
-        glTexCoord2f(0.0f, t2);
-        glVertex3iv((GLint*)&vertices[i + 2]);
-        
-        glEnd();
       }
       
+      glEnd();
       glDisable(GL_TEXTURE_2D);
     }
 }
