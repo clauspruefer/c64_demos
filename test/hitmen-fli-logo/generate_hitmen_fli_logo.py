@@ -267,7 +267,7 @@ def create_comparison_image(fli_img, non_fli_img):
         font = ImageFont.load_default()
     
     draw.text((20, 10), "Non-FLI (one color/char)", fill=(255, 255, 255), font=font)
-    draw.text((SCREEN_WIDTH_CHARS + 30, 10), "FLI (multi-color/char)", fill=(255, 255, 255), font=font)
+    draw.text((SCREEN_WIDTH_PIXELS + 30, 10), "FLI (multi-color/char)", fill=(255, 255, 255), font=font)
     
     return comparison
 
