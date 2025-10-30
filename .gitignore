@@ -24,8 +24,14 @@ tools/mandelbrot-zoom/test_frames/
 demos/cubism/part3/eval/opengl-rotating-cube-grid-cpp/opengl-rotating-cube-grid
 demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
 
+# Test executables
+test/opengl-donut-accelerator/donut-accelerator
+
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
+
+# OpenGL cylinder tool executable
+tools/opengl-cylinder/opengl-textured-cylinder
 
 # Editor backup files
 *~
