@@ -214,7 +214,6 @@ void display() {
     rotateAngle += 11.25f;
     if (rotateAngle >= 360.0f) rotateAngle -= 360.0f;
 
-    glPopMatrix();
     glFlush();
     glutSwapBuffers();
 }
