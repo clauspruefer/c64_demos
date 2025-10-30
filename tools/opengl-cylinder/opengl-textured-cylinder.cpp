@@ -10,6 +10,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 // Ensure M_PI is defined
 #ifndef M_PI
@@ -41,6 +42,92 @@ namespace Cylinder {
     const int TEX_WIDTH = 16;
     const int TEX_HEIGHT = 300;
     GLuint textureID;
+    
+    // Simple 5x7 bitmap font for basic text rendering
+    // Each character is 5 pixels wide, 7 pixels tall
+    const int CHAR_WIDTH = 5;
+    const int CHAR_HEIGHT = 7;
+    
+    // Bitmap font data for uppercase letters and basic characters
+    const unsigned char font_data[][7] = {
+        // Space (32)
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+        // ! (33)
+        {0x04, 0x04, 0x04, 0x04, 0x00, 0x04, 0x00},
+        // (skip characters 34-64 for simplicity)
+    };
+    
+    // Simplified character set for the text we need
+    const unsigned char font_chars[][7] = {
+        // T
+        {0x1F, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00},
+        // H
+        {0x11, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x00},
+        // I
+        {0x0E, 0x04, 0x04, 0x04, 0x04, 0x0E, 0x00},
+        // S
+        {0x0E, 0x11, 0x01, 0x0E, 0x10, 0x0F, 0x00},
+        // space
+        {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+        // A
+        {0x0E, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x00},
+        // O
+        {0x0E, 0x11, 0x11, 0x11, 0x11, 0x0E, 0x00},
+        // P
+        {0x0F, 0x11, 0x11, 0x0F, 0x01, 0x01, 0x00},
+        // E
+        {0x1F, 0x01, 0x01, 0x0F, 0x01, 0x1F, 0x00},
+        // N
+        {0x11, 0x13, 0x15, 0x19, 0x11, 0x11, 0x00},
+        // G
+        {0x0E, 0x11, 0x01, 0x1D, 0x11, 0x0E, 0x00},
+        // L
+        {0x01, 0x01, 0x01, 0x01, 0x01, 0x1F, 0x00},
+        // C
+        {0x0E, 0x11, 0x01, 0x01, 0x11, 0x0E, 0x00},
+        // Y
+        {0x11, 0x11, 0x0A, 0x04, 0x04, 0x04, 0x00},
+        // D
+        {0x0F, 0x11, 0x11, 0x11, 0x11, 0x0F, 0x00},
+        // M
+        {0x11, 0x1B, 0x15, 0x11, 0x11, 0x11, 0x00},
+        // !
+        {0x04, 0x04, 0x04, 0x04, 0x00, 0x04, 0x00},
+    };
+    
+    // Text: "THIS IS A OPENGL CYLINDER DEMO!"
+    const char* text = "THIS IS A OPENGL CYLINDER DEMO!";
+    
+    bool getCharPixel(char c, int x, int y) {
+        // Map character to font index
+        int idx = -1;
+        switch(c) {
+            case 'T': idx = 0; break;
+            case 'H': idx = 1; break;
+            case 'I': idx = 2; break;
+            case 'S': idx = 3; break;
+            case ' ': idx = 4; break;
+            case 'A': idx = 5; break;
+            case 'O': idx = 6; break;
+            case 'P': idx = 7; break;
+            case 'E': idx = 8; break;
+            case 'N': idx = 9; break;
+            case 'G': idx = 10; break;
+            case 'L': idx = 11; break;
+            case 'C': idx = 12; break;
+            case 'Y': idx = 13; break;
+            case 'D': idx = 14; break;
+            case 'M': idx = 15; break;
+            case '!': idx = 16; break;
+            default: return false;
+        }
+        
+        if (idx == -1 || y < 0 || y >= CHAR_HEIGHT || x < 0 || x >= CHAR_WIDTH) {
+            return false;
+        }
+        
+        return (font_chars[idx][y] >> (4 - x)) & 1;
+    }
     
     // Generate procedural texture
     void generateTexture() {
@@ -86,6 +173,32 @@ namespace Cylinder {
                     r = 1.0f;
                     g = 1.0f;
                     b = 1.0f;
+                }
+                
+                // Add text vertically down the middle of the texture
+                // Text will repeat as it wraps around the cylinder
+                int textLen = strlen(text);
+                int charSpacing = 8; // 7 pixels tall + 1 pixel spacing
+                int textStartY = 20; // Start position
+                
+                // Calculate which character and position we're in
+                int relY = (y - textStartY);
+                if (relY >= 0 && relY < textLen * charSpacing) {
+                    int charIndex = relY / charSpacing;
+                    int yInChar = relY % charSpacing;
+                    
+                    if (charIndex < textLen && yInChar < CHAR_HEIGHT) {
+                        // Center the character horizontally in the 16-pixel width
+                        int xOffset = (TEX_WIDTH - CHAR_WIDTH) / 2;
+                        int xInChar = x - xOffset;
+                        
+                        if (getCharPixel(text[charIndex], xInChar, yInChar)) {
+                            // Draw text in bright white/yellow
+                            r = 1.0f;
+                            g = 1.0f;
+                            b = 0.3f;
+                        }
+                    }
                 }
                 
                 texData[idx + 0] = (unsigned char)(r * 255);
