@@ -1,5 +1,5 @@
-//- Enhanced OpenGL cylinder with texture between double helix ropes
-//- Based on the original double helix demo, adds a cylindrical texture surface
+//- Enhanced OpenGL cylinder with texture mapped on the helix points
+//- Based on the original double helix demo, adds texture between the two helix strands
 //- Texture displays "this is a cylinder opengl demo by twf/hitmen" vertically
 
 #include <stdlib.h>
@@ -19,12 +19,13 @@ static const int FPS = 60;
 static GLfloat rotateAngle = 0.0f;
 static GLuint textureID = 0;
 
-//- Double Helix Namespace (same as original)
+//- Double Helix Namespace
 namespace DoubleHelix {
 
     const int NUM_VERTICES = 18;
 
     //- Double helix vertices: two intertwined ropes wrapping around cylinder
+    //- These are arranged in pairs: strand1[i] at even indices, strand2[i] at odd indices
     GLint vertices[NUM_VERTICES][3] = {
       {  8,  15,   0}, { -8,  15,   0}, 
       { -7,  11,  -5}, {  7,  11,   5}, 
@@ -43,8 +44,8 @@ namespace DoubleHelix {
       {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}
     };
 
-    void draw() {
-      // Draw double helix vertices as points
+    void drawPoints() {
+      // Draw double helix vertices as points (original visualization)
       glBegin(GL_POINTS);
       for (int i = 0; i < NUM_VERTICES; i++) {
         glColor3fv((GLfloat*)&vertexColors[i]);
@@ -52,50 +53,50 @@ namespace DoubleHelix {
       }
       glEnd();
     }
-}
 
-//- Textured Cylinder Namespace
-namespace TexturedCylinder {
-    const int SEGMENTS = 32;  // Number of segments around the cylinder
-    const int HEIGHT_SEGMENTS = 20;  // Number of segments along height
-    const float RADIUS = 7.0f;  // Cylinder radius (slightly smaller than helix)
-    const float HEIGHT = 30.0f;  // Total cylinder height
-    const float TOP_Y = 15.0f;  // Top position
-    const float BOTTOM_Y = -15.0f;  // Bottom position
-    
-    void draw() {
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, textureID);
+    void drawTexturedSurface() {
+      // Draw textured quads connecting the two helix strands
+      // The vertices are arranged as: strand1[0], strand2[0], strand1[1], strand2[1], ...
+      // We create quads between consecutive pairs from each strand
+      
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, textureID);
+      glColor3f(1.0f, 1.0f, 1.0f);  // White color to show texture properly
+      
+      // Draw quads connecting the two strands
+      // Each pair of vertices (i, i+1) represents a point on strand 1 and strand 2
+      // We connect them to the next pair to form quads
+      for (int i = 0; i < NUM_VERTICES - 2; i += 2) {
+        // Current pair: vertices[i] (strand1) and vertices[i+1] (strand2)
+        // Next pair: vertices[i+2] (strand1) and vertices[i+3] (strand2)
         
-        // Set texture color to white so texture colors show properly
-        glColor3f(1.0f, 1.0f, 1.0f);
+        // Calculate texture coordinates based on vertical position
+        float t1 = (float)(i / 2) / (NUM_VERTICES / 2 - 1);
+        float t2 = (float)((i + 2) / 2) / (NUM_VERTICES / 2 - 1);
         
-        // Draw cylinder as quad strips
-        for (int j = 0; j < HEIGHT_SEGMENTS; j++) {
-            float y1 = BOTTOM_Y + (HEIGHT / HEIGHT_SEGMENTS) * j;
-            float y2 = BOTTOM_Y + (HEIGHT / HEIGHT_SEGMENTS) * (j + 1);
-            float t1 = (float)j / HEIGHT_SEGMENTS;
-            float t2 = (float)(j + 1) / HEIGHT_SEGMENTS;
-            
-            glBegin(GL_QUAD_STRIP);
-            for (int i = 0; i <= SEGMENTS; i++) {
-                float angle = (float)i / SEGMENTS * 2.0f * M_PI;
-                float x = RADIUS * cos(angle);
-                float z = RADIUS * sin(angle);
-                float s = (float)i / SEGMENTS;
-                
-                // Bottom vertex
-                glTexCoord2f(s, t1);
-                glVertex3f(x, y1, z);
-                
-                // Top vertex
-                glTexCoord2f(s, t2);
-                glVertex3f(x, y2, z);
-            }
-            glEnd();
-        }
+        glBegin(GL_QUADS);
         
-        glDisable(GL_TEXTURE_2D);
+        // Quad connecting the two strands at this level and next level
+        // Bottom-left: strand1 current
+        glTexCoord2f(0.0f, t1);
+        glVertex3iv((GLint*)&vertices[i]);
+        
+        // Bottom-right: strand2 current
+        glTexCoord2f(1.0f, t1);
+        glVertex3iv((GLint*)&vertices[i + 1]);
+        
+        // Top-right: strand2 next
+        glTexCoord2f(1.0f, t2);
+        glVertex3iv((GLint*)&vertices[i + 3]);
+        
+        // Top-left: strand1 next
+        glTexCoord2f(0.0f, t2);
+        glVertex3iv((GLint*)&vertices[i + 2]);
+        
+        glEnd();
+      }
+      
+      glDisable(GL_TEXTURE_2D);
     }
 }
 
@@ -204,11 +205,11 @@ void display() {
 
     glRotatef(rotateAngle, 0.0, 1.0, 0.0);
 
-    // Draw textured cylinder first (behind helix)
-    TexturedCylinder::draw();
+    // Draw textured surface connecting the helix strands
+    DoubleHelix::drawTexturedSurface();
     
-    // Draw double helix on top
-    DoubleHelix::draw();
+    // Draw helix points on top for visibility
+    DoubleHelix::drawPoints();
     
     // Increment by 11.25 degrees per frame for 32-frame loop
     rotateAngle += 11.25f;
@@ -248,7 +249,7 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(420, 2520);
-  glutCreateWindow("Textured Cylinder with Double Helix - TWF/Hitmen");
+  glutCreateWindow("Textured Double Helix - TWF/Hitmen");
   glutReshapeFunc(reshape);
   glutTimerFunc(100, timer, 0);
   glutDisplayFunc(display);

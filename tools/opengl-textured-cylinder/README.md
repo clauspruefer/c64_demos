@@ -1,13 +1,14 @@
-# OpenGL Textured Cylinder Demo
+# OpenGL Textured Double Helix Demo
 
-Enhanced version of the OpenGL rotating cylinder with double helix, adding a textured cylinder surface between the two helix ropes.
+Enhanced version of the OpenGL rotating double helix demo, adding a textured surface between the two helix strands.
 
 ## Features
 
-- Rotating cylinder with texture mapping
-- Vertical text on the cylinder surface: "this is a cylinder opengl demo by twf/hitmen"
-- Double helix ropes winding around the textured cylinder
+- Textured surface connecting the two helix strands
+- Vertical text on the helix surface: "this is a cylinder opengl demo by twf/hitmen"
 - Text appears from bottom to top (one character under each other)
+- Helix points remain visible on top of the textured surface
+- Rotating 3D visualization
 
 ## Building
 
@@ -36,6 +37,6 @@ sudo apt-get install freeglut3-dev libglm-dev
 
 ## Description
 
-This demo creates a 3D rotating cylinder with a blue textured surface. The texture displays the text "this is a cylinder opengl demo by twf/hitmen" vertically (from bottom to top). Two intertwined helix ropes wind around the cylinder, creating a double helix effect similar to DNA strands.
+This demo creates a rotating 3D double helix structure with a textured surface connecting the two intertwined strands. The texture displays the text "this is a cylinder opengl demo by twf/hitmen" vertically (from bottom to top), mapped onto quads that bridge between the two helix strands. The original helix points remain visible on top of the textured surface, maintaining the characteristic double helix visualization while adding the textured surface between them.
 
-The cylinder rotates continuously, allowing you to see the text from all angles as it wraps around the cylindrical surface.
+The structure rotates continuously, allowing you to see the text from all angles as it wraps around with the helix.
