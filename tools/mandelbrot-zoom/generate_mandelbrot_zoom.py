@@ -34,7 +34,6 @@ COLODORE_PALETTE_RGB = [
 # Create a palette for Mandelbrot rendering
 # Smooth gradient from dark to light
 MANDELBROT_PALETTE = [
-    0x00,  # Black
     0x06,  # Dark Blue
     0x0b,  # Dark Grey
     0x04,  # Violette (Purple)
@@ -42,7 +41,6 @@ MANDELBROT_PALETTE = [
     0x0a,  # Light Red
     0x0f,  # Light Grey
     0x0d,  # Light Green
-    0x01,  # White
 ]
 
 # Animation parameters
@@ -84,7 +82,7 @@ def iteration_to_color(iteration, max_iter):
     Uses smooth coloring for better gradients
     """
     if iteration == max_iter:
-        return 0  # Black for points in the set
+        return MANDELBROT_PALETTE[0]  # First palette color for points in the set
     
     # Smooth coloring with logarithmic mapping
     # This creates nice smooth color gradients

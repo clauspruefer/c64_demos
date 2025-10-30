@@ -41,8 +41,7 @@ const RGB COLODORE_PALETTE_RGB[16] = {
 
 // Create a palette for Mandelbrot rendering
 // Smooth gradient from dark to light
-const int MANDELBROT_PALETTE[9] = {
-    0x00,  // Black
+const int MANDELBROT_PALETTE[7] = {
     0x06,  // Dark Blue
     0x0b,  // Dark Grey
     0x04,  // Violette (Purple)
@@ -50,7 +49,6 @@ const int MANDELBROT_PALETTE[9] = {
     0x0a,  // Light Red
     0x0f,  // Light Grey
     0x0d,  // Light Green
-    0x01,  // White
 };
 
 // Animation parameters
@@ -95,7 +93,7 @@ int mandelbrot(double c_real, double c_imag, int max_iter) {
  */
 int iteration_to_color(int iteration, int max_iter) {
     if (iteration == max_iter) {
-        return 0;  // Black for points in the set
+        return MANDELBROT_PALETTE[0];  // First palette color for points in the set
     }
     
     // Smooth coloring with logarithmic mapping
@@ -103,7 +101,7 @@ int iteration_to_color(int iteration, int max_iter) {
     double smooth_iter = iteration + 1 - std::log(std::log(2.0)) / std::log(2.0);
     
     // Map to palette (cycling through colors)
-    int palette_index = static_cast<int>(smooth_iter * 2) % 9;
+    int palette_index = static_cast<int>(smooth_iter * 2) % 7;
     
     return MANDELBROT_PALETTE[palette_index];
 }
