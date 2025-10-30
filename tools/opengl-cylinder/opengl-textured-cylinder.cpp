@@ -5,10 +5,16 @@
 #include <stdlib.h>
 #include <GL/glut.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 
 #include <cmath>
 #include <iostream>
 #include <vector>
+
+// Ensure M_PI is defined
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 using namespace std;
 
@@ -38,7 +44,7 @@ namespace Cylinder {
     
     // Generate procedural texture
     void generateTexture() {
-        unsigned char* texData = new unsigned char[TEX_WIDTH * TEX_HEIGHT * 3];
+        std::vector<unsigned char> texData(TEX_WIDTH * TEX_HEIGHT * 3);
         
         for (int y = 0; y < TEX_HEIGHT; y++) {
             for (int x = 0; x < TEX_WIDTH; x++) {
@@ -100,9 +106,7 @@ namespace Cylinder {
         
         // Upload texture data
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEX_WIDTH, TEX_HEIGHT, 0, 
-                     GL_RGB, GL_UNSIGNED_BYTE, texData);
-        
-        delete[] texData;
+                     GL_RGB, GL_UNSIGNED_BYTE, texData.data());
     }
     
     // Generate cylinder geometry
