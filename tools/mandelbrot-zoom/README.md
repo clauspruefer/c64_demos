@@ -2,6 +2,8 @@
 
 This tool generates a 4000-frame endless zoom animation into the Mandelbrot set, rendered in the Colodore C64 palette at 320x200 resolution.
 
+Available in both Python and C++ implementations.
+
 ## Features
 
 - **4000 frames** of smooth zoom animation
@@ -10,7 +12,9 @@ This tool generates a 4000-frame endless zoom animation into the Mandelbrot set,
 - **PNG export** for each frame
 - **Endless zoom** effect into the Mandelbrot set
 
-## Requirements
+## Python Version
+
+### Requirements
 
 - Python 3.x
 - Pillow (PIL) library
@@ -20,17 +24,55 @@ Install dependencies:
 pip3 install Pillow
 ```
 
-## Usage
+### Usage
 
 Run the script from this directory:
 ```bash
 python3 generate_mandelbrot_zoom.py
 ```
 
-The script will:
+## C++ Version
+
+### Requirements
+
+- g++ compiler with C++11 support
+- libpng development library
+
+Install dependencies (Ubuntu/Debian):
+```bash
+sudo apt-get install libpng-dev
+```
+
+### Build
+
+```bash
+make
+```
+
+This will compile `generate_mandelbrot_zoom.cpp` into an executable.
+
+### Usage
+
+Run the compiled program:
+```bash
+./generate_mandelbrot_zoom
+```
+
+### Clean
+
+To remove the compiled executable and generated frames:
+```bash
+make clean
+```
+
+## Output
+
+Both versions will:
 1. Create a `frames/` directory
 2. Generate 4000 PNG images (frame_0000.png to frame_3999.png)
 3. Each frame is 320x200 pixels using the Colodore C64 palette
+
+**Note:** The C++ version is significantly faster than Python (typically 5-10x speedup).
 
 ## Creating a Video
 
@@ -43,7 +85,7 @@ This creates a ~2.5 minute video at 25 fps (PAL C64 frame rate).
 
 ## Customization
 
-You can modify the following parameters in the script:
+You can modify the following parameters in either script:
 
 - `FRAMES`: Number of frames to generate (default: 4000)
 - `ZOOM_FACTOR`: Zoom speed per frame (default: 1.02)
