@@ -21,6 +21,7 @@ demos/floodlights/frames/
 # OpenGL demo executables
 demos/cubism/part3/eval/opengl-rotating-cube-grid-cpp/opengl-rotating-cube-grid
 demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
+tools/opengl-cylinder-texture/opengl-cylinder-texture
 
 # Editor backup files
 *~
