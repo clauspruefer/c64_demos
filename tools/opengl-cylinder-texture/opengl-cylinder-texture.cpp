@@ -28,7 +28,6 @@ namespace Cylinder {
     
     // Helix parameters for texture winding
     const float HELIX_ROTATIONS = 4.0f;  // Number of full rotations from bottom to top
-    const int NUM_HELIX_STRANDS = 3;     // Number of texture strands winding around
     
     struct Vertex {
         float x, y, z;
@@ -38,7 +37,7 @@ namespace Cylinder {
     
     vector<Vertex> vertices;
     
-    // Scroll text that will be repeated in texture
+    // Scroll text that will be repeated - one character per vertical position
     const string SCROLL_TEXT = "*** C64 DEMOS *** OPENGL CYLINDER *** HELIX TEXTURE *** ";
     
     // Generate cylinder geometry with helix texture coordinates
@@ -56,52 +55,43 @@ namespace Cylinder {
                 float z = RADIUS * sin(theta);
                 float uCoord = (float)r / RADIAL_SEGMENTS;
                 
-                // Calculate helix texture coordinates
-                // Wind texture around cylinder multiple times as we go up
-                float helixU = fmod(uCoord + vCoord * HELIX_ROTATIONS, 1.0f);
+                // Calculate helix position - wind around cylinder as we go up
+                // The helix angle increases with height
+                float helixAngle = uCoord + vCoord * HELIX_ROTATIONS;
+                float helixU = fmod(helixAngle, 1.0f);
                 
-                // Color based on helix position for visualization
-                // Create colored strands
-                float strandPos = fmod(helixU * NUM_HELIX_STRANDS, 1.0f);
+                // Determine which character in scroll text to display at this height
+                // Map the vertical position to a character in the scroll text
+                // Use more repetitions to make letters more visible
+                int charIndex = (int)(vCoord * SCROLL_TEXT.length() * 4) % SCROLL_TEXT.length();
+                char currentChar = SCROLL_TEXT[charIndex];
                 
-                // Determine which character in scroll text to show
-                int textIndex = (int)(vCoord * SCROLL_TEXT.length() * 3) % SCROLL_TEXT.length();
-                char c = SCROLL_TEXT[textIndex];
+                // Determine if this vertex should display the text
+                // Text appears along the helix path - create a rope-like band
+                // The text "rope" follows the helix, appearing when helixU is near 0.0
+                float textBandWidth = 0.2f;  // Width of the text band (rope width)
+                bool isOnTextPath = (helixU < textBandWidth) || (helixU > (1.0f - textBandWidth));
                 
-                // Create color gradient for scroll text effect
-                float brightness = 0.3f + 0.7f * strandPos;
-                
-                // Color the different helix strands
-                int strandId = (int)(helixU * NUM_HELIX_STRANDS) % NUM_HELIX_STRANDS;
-                float r_val, g_val, b_val;
-                
-                switch(strandId) {
-                    case 0:  // Red strand
-                        r_val = brightness;
-                        g_val = brightness * 0.2f;
-                        b_val = brightness * 0.2f;
-                        break;
-                    case 1:  // Green strand
-                        r_val = brightness * 0.2f;
-                        g_val = brightness;
-                        b_val = brightness * 0.2f;
-                        break;
-                    case 2:  // Blue strand
-                        r_val = brightness * 0.2f;
-                        g_val = brightness * 0.2f;
-                        b_val = brightness;
-                        break;
-                    default:
-                        r_val = g_val = b_val = brightness;
+                // Create brightness based on whether we're on the text path and the character
+                float brightness;
+                if (isOnTextPath) {
+                    // On the helix rope path
+                    if (currentChar != ' ') {
+                        // Bright white for text characters
+                        brightness = 1.0f;
+                    } else {
+                        // Medium gray for spaces (still visible as part of the rope)
+                        brightness = 0.4f;
+                    }
+                } else {
+                    // Background - very dark
+                    brightness = 0.05f;
                 }
                 
-                // Add text pattern by modulating brightness based on character
-                if (c != ' ') {
-                    // Make non-space characters brighter
-                    r_val = min(1.0f, r_val * 1.5f);
-                    g_val = min(1.0f, g_val * 1.5f);
-                    b_val = min(1.0f, b_val * 1.5f);
-                }
+                // Use white/grayscale only (no RGB coloring)
+                float r_val = brightness;
+                float g_val = brightness;
+                float b_val = brightness;
                 
                 Vertex v;
                 v.x = x;
