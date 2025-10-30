@@ -136,15 +136,11 @@ def generate_fli_logo():
     fli_img = Image.new('RGB', (SCREEN_WIDTH_PIXELS, SCREEN_HEIGHT_PIXELS))
     fli_pixels = fli_img.load()
     
-    # Calculate color bands - create visible horizontal stripes
-    # We'll use about 12-16 color bands that cut through the text
-    num_bands = 16
-    band_height = SCREEN_HEIGHT_PIXELS / num_bands
-    
     # Process each scanline with its own color
+    # Creates horizontal color bands that cut through characters
     for y in range(SCREEN_HEIGHT_PIXELS):
-        # Determine which color band this scanline belongs to
-        # This creates horizontal stripes that cut through characters
+        # Determine which color from the gradient to use for this scanline
+        # This creates smooth horizontal stripes that cut through characters
         band_index = int((y / SCREEN_HEIGHT_PIXELS) * (len(COLOR_GRADIENT) - 1))
         band_index = min(band_index, len(COLOR_GRADIENT) - 1)
         
