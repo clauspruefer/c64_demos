@@ -39,25 +39,18 @@ const RGB COLODORE_PALETTE_RGB[16] = {
     {0xB2, 0xB2, 0xB2},  // 15: Light Grey
 };
 
-// Create a palette for Mandelbrot rendering (16 colors cycling)
-// Using a selection that looks good for fractals
-const int MANDELBROT_PALETTE[16] = {
-    0,   // Black (deep areas)
-    6,   // Blue
-    14,  // Light Blue
-    3,   // Cyan
-    5,   // Green
-    13,  // Light Green
-    7,   // Yellow
-    8,   // Orange
-    2,   // Red
-    10,  // Light Red
-    4,   // Purple
-    12,  // Medium Grey
-    15,  // Light Grey
-    1,   // White
-    15,  // Light Grey
-    12,  // Medium Grey
+// Create a palette for Mandelbrot rendering
+// Smooth gradient from dark to light
+const int MANDELBROT_PALETTE[9] = {
+    0x00,  // Black
+    0x06,  // Dark Blue
+    0x0b,  // Dark Grey
+    0x04,  // Violette (Purple)
+    0x0e,  // Light Blue
+    0x0a,  // Light Red
+    0x0f,  // Light Grey
+    0x0d,  // Light Green
+    0x01,  // White
 };
 
 // Animation parameters
@@ -110,7 +103,7 @@ int iteration_to_color(int iteration, int max_iter) {
     double smooth_iter = iteration + 1 - std::log(std::log(2.0)) / std::log(2.0);
     
     // Map to palette (cycling through colors)
-    int palette_index = static_cast<int>(smooth_iter * 2) % 16;
+    int palette_index = static_cast<int>(smooth_iter * 2) % 9;
     
     return MANDELBROT_PALETTE[palette_index];
 }
