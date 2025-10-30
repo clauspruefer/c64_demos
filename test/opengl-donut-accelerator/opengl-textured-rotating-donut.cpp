@@ -33,7 +33,7 @@ namespace Torus {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
     
-    // Generate torus geometry
+    // Generate torus geometry with 3D surface details
     void generate() {
         vertices.clear();
         indices.clear();
@@ -48,22 +48,128 @@ namespace Torus {
                 float cosPhi = cos(phi);
                 float sinPhi = sin(phi);
                 
-                Vertex v;
-                // Position
-                v.x = (MAJOR_RADIUS + MINOR_RADIUS * cosPhi) * cosTheta;
-                v.y = (MAJOR_RADIUS + MINOR_RADIUS * cosPhi) * sinTheta;
-                v.z = MINOR_RADIUS * sinPhi;
+                // UV coordinates for procedural displacement
+                float u = (float)i / MAJOR_SEGMENTS;
+                float v = (float)j / MINOR_SEGMENTS;
                 
-                // Normal
-                v.nx = cosPhi * cosTheta;
-                v.ny = cosPhi * sinTheta;
-                v.nz = sinPhi;
+                // Calculate displacement based on surface features
+                float displacement = 0.0f;
+                
+                // Normalize v to determine position around tube
+                float vNormalized = fmod(v + 0.25f, 1.0f);
+                
+                // Segment information
+                float segmentU = u * 32.0f;
+                float segmentId = floor(segmentU);
+                float segmentPos = fmod(segmentU, 1.0f);
+                
+                // Add 3D equipment boxes (terminals) - they protrude from surface
+                if (fmod(segmentId, 8.0f) < 1.0f && segmentPos > 0.2f && segmentPos < 0.8f) {
+                    // Bottom side: equipment terminals that stick out
+                    if (vNormalized > 0.55f && vNormalized < 0.80f) {
+                        // Box-like protrusion
+                        float boxDepth = 0.15f;
+                        float edgeFactor = 1.0f;
+                        
+                        // Create beveled edges
+                        if (segmentPos < 0.25f || segmentPos > 0.75f) {
+                            edgeFactor = 0.5f + 0.5f * sin((segmentPos - 0.2f) / 0.6f * M_PI);
+                        }
+                        if (vNormalized < 0.58f || vNormalized > 0.77f) {
+                            edgeFactor *= 0.5f + 0.5f * sin((vNormalized - 0.55f) / 0.25f * M_PI);
+                        }
+                        
+                        displacement += boxDepth * edgeFactor;
+                    }
+                }
+                
+                // Add magnet coil windings - circular ridges
+                if (vNormalized >= 0.15f && vNormalized <= 0.45f) {
+                    bool isMagnetSection = (fmod(segmentId, 4.0f) < 2.0f);
+                    if (isMagnetSection) {
+                        // Copper coil ridges
+                        float coilPattern = sin(vNormalized * 64.0f * M_PI);
+                        displacement += 0.02f * coilPattern;
+                        
+                        // Support structure bumps every 4 segments
+                        if (fmod(segmentU * 4.0f, 1.0f) < 0.1f) {
+                            displacement += 0.05f;
+                        }
+                    }
+                }
+                
+                // Add cooling pipe ridges (run horizontally around ring)
+                if (vNormalized >= 0.20f && vNormalized <= 0.40f) {
+                    float pipePattern = fmod(vNormalized * 16.0f, 1.0f);
+                    if (pipePattern < 0.15f) {
+                        // Cylindrical pipe cross-section
+                        float pipeCurve = sin(pipePattern / 0.15f * M_PI);
+                        displacement += 0.04f * pipeCurve;
+                    }
+                }
+                
+                // Add detector housing (rectangular boxes)
+                bool isDetectorSection = (fmod(segmentId, 4.0f) >= 2.0f);
+                if (isDetectorSection && vNormalized >= 0.15f && vNormalized <= 0.45f) {
+                    // Detector box protrusions
+                    if (segmentPos > 0.15f && segmentPos < 0.85f) {
+                        float boxProfile = 1.0f;
+                        if (segmentPos < 0.20f || segmentPos > 0.80f) {
+                            boxProfile = sin((segmentPos - 0.15f) / 0.7f * M_PI);
+                        }
+                        displacement += 0.08f * boxProfile;
+                    }
+                }
+                
+                // Add cable tray ridges and individual cable bumps
+                if (vNormalized >= 0.65f && vNormalized <= 0.85f) {
+                    // Cable tray walls
+                    if (vNormalized < 0.68f || vNormalized > 0.82f) {
+                        displacement += 0.03f;
+                    }
+                    
+                    // Individual cable bumps
+                    float cableV = vNormalized * 96.0f;
+                    float cableU = u * 256.0f;
+                    if (fmod(cableV, 1.0f) < 0.3f) {
+                        float cableRadius = sin(fmod(cableV, 1.0f) / 0.3f * M_PI);
+                        displacement += 0.015f * cableRadius;
+                    }
+                }
+                
+                // Add beam pipe panel lines (indented seams)
+                if (vNormalized < 0.15f || vNormalized > 0.85f) {
+                    if (segmentPos < 0.05f || segmentPos > 0.95f) {
+                        displacement -= 0.02f; // Indented panel seams
+                    }
+                    
+                    // Rivets/bolts (small bumps)
+                    if (fmod(u * 128.0f, 1.0f) < 0.05f && 
+                        (vNormalized < 0.05f || vNormalized > 0.95f)) {
+                        float rivetSize = 0.015f;
+                        displacement += rivetSize;
+                    }
+                }
+                
+                Vertex v_vertex;
+                // Apply displacement along normal direction
+                float effectiveRadius = MINOR_RADIUS + displacement;
+                
+                // Position with displacement
+                v_vertex.x = (MAJOR_RADIUS + effectiveRadius * cosPhi) * cosTheta;
+                v_vertex.y = (MAJOR_RADIUS + effectiveRadius * cosPhi) * sinTheta;
+                v_vertex.z = effectiveRadius * sinPhi;
+                
+                // Normal (still pointing radially outward from tube)
+                v_vertex.nx = cosPhi * cosTheta;
+                v_vertex.ny = cosPhi * sinTheta;
+                v_vertex.nz = sinPhi;
                 
                 // Texture coordinates
-                v.u = (float)i / MAJOR_SEGMENTS;
-                v.v = (float)j / MINOR_SEGMENTS;
+                v_vertex.u = u;
+                v_vertex.v = v;
                 
-                vertices.push_back(v);
+                vertices.push_back(v_vertex);
             }
         }
         
@@ -239,6 +345,215 @@ namespace Torus {
     }
 }
 
+//- Additional 3D Structures Namespace
+namespace Structures {
+    
+    // Draw a box (for equipment racks, vacuum pumps, etc.)
+    void drawBox(float x, float y, float z, float w, float h, float d, 
+                 float r, float g, float b) {
+        glColor3f(r, g, b);
+        
+        // Front face
+        glBegin(GL_QUADS);
+        glNormal3f(0, 0, 1);
+        glVertex3f(x-w/2, y-h/2, z+d/2);
+        glVertex3f(x+w/2, y-h/2, z+d/2);
+        glVertex3f(x+w/2, y+h/2, z+d/2);
+        glVertex3f(x-w/2, y+h/2, z+d/2);
+        glEnd();
+        
+        // Back face
+        glBegin(GL_QUADS);
+        glNormal3f(0, 0, -1);
+        glVertex3f(x-w/2, y-h/2, z-d/2);
+        glVertex3f(x-w/2, y+h/2, z-d/2);
+        glVertex3f(x+w/2, y+h/2, z-d/2);
+        glVertex3f(x+w/2, y-h/2, z-d/2);
+        glEnd();
+        
+        // Top face
+        glBegin(GL_QUADS);
+        glNormal3f(0, 1, 0);
+        glVertex3f(x-w/2, y+h/2, z-d/2);
+        glVertex3f(x-w/2, y+h/2, z+d/2);
+        glVertex3f(x+w/2, y+h/2, z+d/2);
+        glVertex3f(x+w/2, y+h/2, z-d/2);
+        glEnd();
+        
+        // Bottom face
+        glBegin(GL_QUADS);
+        glNormal3f(0, -1, 0);
+        glVertex3f(x-w/2, y-h/2, z-d/2);
+        glVertex3f(x+w/2, y-h/2, z-d/2);
+        glVertex3f(x+w/2, y-h/2, z+d/2);
+        glVertex3f(x-w/2, y-h/2, z+d/2);
+        glEnd();
+        
+        // Right face
+        glBegin(GL_QUADS);
+        glNormal3f(1, 0, 0);
+        glVertex3f(x+w/2, y-h/2, z-d/2);
+        glVertex3f(x+w/2, y+h/2, z-d/2);
+        glVertex3f(x+w/2, y+h/2, z+d/2);
+        glVertex3f(x+w/2, y-h/2, z+d/2);
+        glEnd();
+        
+        // Left face
+        glBegin(GL_QUADS);
+        glNormal3f(-1, 0, 0);
+        glVertex3f(x-w/2, y-h/2, z-d/2);
+        glVertex3f(x-w/2, y-h/2, z+d/2);
+        glVertex3f(x-w/2, y+h/2, z+d/2);
+        glVertex3f(x-w/2, y+h/2, z-d/2);
+        glEnd();
+    }
+    
+    // Draw a cylinder (for pipes, supports)
+    void drawCylinder(float x, float y, float z, float radius, float height, 
+                      float r, float g, float b, bool horizontal = false) {
+        const int slices = 12;
+        glColor3f(r, g, b);
+        
+        for (int i = 0; i < slices; i++) {
+            float angle1 = 2.0f * M_PI * i / slices;
+            float angle2 = 2.0f * M_PI * (i + 1) / slices;
+            
+            float x1 = radius * cos(angle1);
+            float y1 = radius * sin(angle1);
+            float x2 = radius * cos(angle2);
+            float y2 = radius * sin(angle2);
+            
+            glBegin(GL_QUADS);
+            if (horizontal) {
+                // Horizontal cylinder (along Y axis)
+                glNormal3f(x1, 0, y1);
+                glVertex3f(x + x1, y - height/2, z + y1);
+                glVertex3f(x + x2, y - height/2, z + y2);
+                glVertex3f(x + x2, y + height/2, z + y2);
+                glVertex3f(x + x1, y + height/2, z + y1);
+            } else {
+                // Vertical cylinder (along Z axis)
+                glNormal3f(x1, y1, 0);
+                glVertex3f(x + x1, y + y1, z - height/2);
+                glVertex3f(x + x2, y + y2, z - height/2);
+                glVertex3f(x + x2, y + y2, z + height/2);
+                glVertex3f(x + x1, y + y1, z + height/2);
+            }
+            glEnd();
+        }
+    }
+    
+    // Draw all structural elements around the accelerator
+    void drawAll() {
+        // Support pillars/stands every 45 degrees (8 total)
+        for (int i = 0; i < 8; i++) {
+            float angle = 2.0f * M_PI * i / 8.0f;
+            float distance = Torus::MAJOR_RADIUS + 0.2f;
+            float px = distance * cos(angle);
+            float py = distance * sin(angle);
+            float pz = -1.2f; // Below the torus
+            
+            // Support pillar (gray)
+            drawBox(px, py, pz, 0.15f, 0.15f, 1.0f, 0.4f, 0.4f, 0.45f);
+            
+            // Connection bracket to torus (darker gray)
+            drawBox(px * 0.85f, py * 0.85f, 0.1f, 0.12f, 0.12f, 0.3f, 0.3f, 0.3f, 0.35f);
+        }
+        
+        // Vacuum pump stations (large boxes) every 90 degrees
+        for (int i = 0; i < 4; i++) {
+            float angle = 2.0f * M_PI * i / 4.0f + M_PI / 4.0f;
+            float distance = Torus::MAJOR_RADIUS + 1.5f;
+            float px = distance * cos(angle);
+            float py = distance * sin(angle);
+            
+            // Main pump housing (industrial gray-green)
+            drawBox(px, py, -0.3f, 0.4f, 0.4f, 0.6f, 0.35f, 0.4f, 0.35f);
+            
+            // Pump motor on top (darker)
+            drawBox(px, py, 0.15f, 0.25f, 0.25f, 0.3f, 0.25f, 0.28f, 0.25f);
+            
+            // Connection pipe from pump to torus
+            float torusX = (Torus::MAJOR_RADIUS + 0.5f) * cos(angle);
+            float torusY = (Torus::MAJOR_RADIUS + 0.5f) * sin(angle);
+            float midX = (px + torusX) / 2;
+            float midY = (py + torusY) / 2;
+            
+            drawCylinder(midX, midY, -0.1f, 0.06f, 0.8f, 0.5f, 0.5f, 0.52f, true);
+        }
+        
+        // Power supply units (every 60 degrees, 6 total)
+        for (int i = 0; i < 6; i++) {
+            float angle = 2.0f * M_PI * i / 6.0f;
+            float distance = Torus::MAJOR_RADIUS + 1.0f;
+            float px = distance * cos(angle);
+            float py = distance * sin(angle);
+            
+            // Power supply box (beige/tan)
+            drawBox(px, py, 0.5f, 0.3f, 0.3f, 0.4f, 0.55f, 0.52f, 0.45f);
+            
+            // Power indicator LEDs (green lights on front)
+            float ledX = px + 0.15f * cos(angle + M_PI);
+            float ledY = py + 0.15f * sin(angle + M_PI);
+            drawBox(ledX, ledY, 0.65f, 0.03f, 0.03f, 0.02f, 0.2f, 0.9f, 0.2f);
+        }
+        
+        // Cable conduits running between equipment
+        for (int i = 0; i < 16; i++) {
+            float angle = 2.0f * M_PI * i / 16.0f;
+            float distance = Torus::MAJOR_RADIUS + 0.9f;
+            float px = distance * cos(angle);
+            float py = distance * sin(angle);
+            
+            // Cable conduit (dark gray)
+            drawBox(px, py, -0.6f, 0.08f, 0.08f, 0.4f, 0.2f, 0.2f, 0.22f);
+        }
+        
+        // Diagnostic sensor arrays (small boxes on top of torus)
+        for (int i = 0; i < 24; i++) {
+            float angle = 2.0f * M_PI * i / 24.0f;
+            float distance = Torus::MAJOR_RADIUS;
+            float px = distance * cos(angle);
+            float py = distance * sin(angle);
+            
+            // Sensor box (white/light gray)
+            drawBox(px, py, Torus::MINOR_RADIUS + 0.15f, 
+                   0.12f, 0.12f, 0.08f, 0.8f, 0.82f, 0.85f);
+        }
+        
+        // Cryogenic supply lines (blue pipes running alongside torus)
+        const int numPipes = 4;
+        for (int p = 0; p < numPipes; p++) {
+            float offsetAngle = 2.0f * M_PI * p / numPipes;
+            
+            for (int i = 0; i < 32; i++) {
+                float angle1 = 2.0f * M_PI * i / 32.0f;
+                float angle2 = 2.0f * M_PI * (i + 1) / 32.0f;
+                
+                float r1 = Torus::MAJOR_RADIUS;
+                float r2 = Torus::MAJOR_RADIUS;
+                
+                float pipeOffset = Torus::MINOR_RADIUS * 0.7f;
+                
+                float x1 = r1 * cos(angle1) + pipeOffset * cos(offsetAngle) * cos(angle1);
+                float y1 = r1 * sin(angle1) + pipeOffset * cos(offsetAngle) * sin(angle1);
+                float z1 = pipeOffset * sin(offsetAngle);
+                
+                float x2 = r2 * cos(angle2) + pipeOffset * cos(offsetAngle) * cos(angle2);
+                float y2 = r2 * sin(angle2) + pipeOffset * cos(offsetAngle) * sin(angle2);
+                float z2 = pipeOffset * sin(offsetAngle);
+                
+                // Small blue pipe segments
+                glColor3f(0.2f, 0.4f, 0.7f);
+                glBegin(GL_LINES);
+                glVertex3f(x1, y1, z1);
+                glVertex3f(x2, y2, z2);
+                glEnd();
+            }
+        }
+    }
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -246,10 +561,15 @@ void display() {
 
     glPushMatrix();
     
-    // Rotate the donut
+    // Rotate everything together
     glRotatef(rotateAngle, 0.3, 0.8, 0.1);
     
+    // Draw main torus with surface details
     Torus::draw();
+    
+    // Draw additional 3D structures and equipment
+    Structures::drawAll();
+    
     rotateAngle += 1;
     
     glPopMatrix();
@@ -345,10 +665,18 @@ void init() {
     // Generate torus geometry
     Torus::generate();
     
-    cout << "Particle Accelerator Donut initialized!" << endl;
-    cout << "Vertices: " << Torus::vertices.size() << endl;
-    cout << "Triangles: " << Torus::indices.size() / 3 << endl;
-    cout << "Features: Magnets, Detectors, Terminals, Beam Pipe, Cryogenics" << endl;
+    cout << "Particle Accelerator Complex initialized!" << endl;
+    cout << "Main Torus:" << endl;
+    cout << "  Vertices: " << Torus::vertices.size() << endl;
+    cout << "  Triangles: " << Torus::indices.size() / 3 << endl;
+    cout << "  Surface features: Magnets, Detectors, Terminals, Coils, Cables" << endl;
+    cout << "Additional 3D Structures:" << endl;
+    cout << "  8 Support pillars with brackets" << endl;
+    cout << "  4 Vacuum pump stations" << endl;
+    cout << "  6 Power supply units" << endl;
+    cout << "  16 Cable conduits" << endl;
+    cout << "  24 Diagnostic sensor arrays" << endl;
+    cout << "  Cryogenic supply lines" << endl;
 }
 
 int main(int argc, char** argv) {
