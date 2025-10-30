@@ -12,6 +12,8 @@ __pycache__/
 
 # Generated PNG animation frames
 demos/floodlights/frames/
+tools/mandelbrot-zoom/frames/
+tools/mandelbrot-zoom/test_frames/
 
 # Build artifacts
 *.o
