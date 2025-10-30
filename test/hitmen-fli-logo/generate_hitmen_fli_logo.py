@@ -20,8 +20,11 @@ CHAR_HEIGHT = 8
 SCREEN_WIDTH_PIXELS = SCREEN_WIDTH_CHARS * CHAR_WIDTH
 SCREEN_HEIGHT_PIXELS = SCREEN_HEIGHT_CHARS * CHAR_HEIGHT
 
-# Colodore palette (Pepto's accurate C64 colors)
-# This is the most accurate representation of real C64 colors
+# Colodore palette - more accurate C64 colors than Pepto's palette
+# Colodore uses measured values from real hardware with gamma correction
+# Reference: https://www.colodore.com/
+# Note: This differs from the Pepto palette used in floodlights generator
+# as the problem statement specifically requests colodore palette
 COLODORE_PALETTE_RGB = {
     0x00: (0x00, 0x00, 0x00),  # Black
     0x01: (0xFF, 0xFF, 0xFF),  # White
@@ -85,10 +88,10 @@ def create_hitmen_text_image():
         # Try common monospace/bold fonts
         font_size = 120 * scale
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
-    except:
+    except (OSError, IOError):
         try:
             font = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf", 120 * scale)
-        except:
+        except (OSError, IOError):
             # Fallback to default font
             font = ImageFont.load_default()
     
@@ -217,7 +220,7 @@ def create_comparison_image(fli_img, non_fli_img):
     # Add labels
     try:
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
-    except:
+    except (OSError, IOError):
         font = ImageFont.load_default()
     
     draw.text((80, 5), "Non-FLI (4 colors)", fill=(255, 255, 255), font=font)
