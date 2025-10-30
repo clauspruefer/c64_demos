@@ -55,31 +55,27 @@ namespace DoubleHelix {
     }
 
     void drawTexturedSurface() {
-      // Draw textured surface connecting the two helix strands
-      // The vertices are arranged as: strand1[0], strand2[0], strand1[1], strand2[1], ...
-      // We create a continuous quad strip between the two strands
+      // Draw textured surface connecting each strand to itself (creating a ribbon)
+      // We'll create two separate ribbons, one for each strand
       
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textureID);
       glColor3f(1.0f, 1.0f, 1.0f);  // White color to show texture properly
       
-      // Use GL_QUAD_STRIP to create a continuous surface with a single texture
-      // mapped from bottom to top
+      // Create a single ribbon connecting both strands
+      // Use GL_QUAD_STRIP where texture wraps around following the helix
       glBegin(GL_QUAD_STRIP);
       
-      // Iterate through vertex pairs and create a strip
-      for (int i = 0; i < NUM_VERTICES; i += 2) {
-        // Calculate vertical texture coordinate (0.0 at bottom, 1.0 at top)
-        float t = (float)(i / 2) / (NUM_VERTICES / 2 - 1);
+      // Iterate through all vertices sequentially to follow the helix spiral
+      for (int i = 0; i < NUM_VERTICES; i++) {
+        // Calculate texture coordinates
+        // s: wraps around as we follow the spiral (0.0 to 1.0 and repeat)
+        // t: goes from bottom to top (0.0 to 1.0)
+        float t = (float)i / (NUM_VERTICES - 1);
+        float s = (i % 2 == 0) ? 0.0f : 1.0f;  // Alternate between edges
         
-        // Add both vertices of the pair (strand1 and strand2)
-        // Left edge (s=0.0)
-        glTexCoord2f(0.0f, t);
+        glTexCoord2f(s, t);
         glVertex3iv((GLint*)&vertices[i]);
-        
-        // Right edge (s=1.0)
-        glTexCoord2f(1.0f, t);
-        glVertex3iv((GLint*)&vertices[i + 1]);
       }
       
       glEnd();
@@ -175,8 +171,8 @@ void createTexture() {
     glBindTexture(GL_TEXTURE_2D, textureID);
     
     // Set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
