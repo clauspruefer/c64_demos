@@ -82,6 +82,17 @@ The demo uses Python scripts to generate:
 3. Character set data for mountain landscape
 4. Optimized assembly code for sprite positioning
 
+### Generated Data Files
+
+The Python scripts generate several data files:
+- **sinus-snowflake-x-data.i** - Used: X-position sine table (30px amplitude)
+- **sinus-snowflake-x2-data.i** - Reserved: Alternative sine (50px amplitude) for future variety
+- **snowflake-y-speed-data.i** - Reserved: Variable fall speeds for future depth effect
+- **snowflake-initial-y-data.i** - Used: Staggered initial Y positions
+- **snowflake-sprite-data.i** - Used: Three snowflake sprite patterns
+
+Files marked "Reserved" are generated for potential future enhancements.
+
 ## Future Enhancements
 
 Potential additions for the final version:
@@ -89,3 +100,5 @@ Potential additions for the final version:
 - Music integration (winter-themed SID tune)
 - Smooth scrolling text scroller with greeting message
 - Particle effect for wind gusts moving snow
+- Variable snowflake fall speeds using snowflake-y-speed-data.i
+- Wider horizontal movement using sinus-snowflake-x2-data.i

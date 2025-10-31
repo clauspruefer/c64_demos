@@ -92,7 +92,8 @@ def main():
     )
     
     # Generate alternative X-sine with larger amplitude for variety
-    print("  - X-position sine table #2 (50 pixel amplitude)...")
+    # NOTE: Reserved for future enhancement - not currently used in main.asm
+    print("  - X-position sine table #2 (50 pixel amplitude) [reserved]...")
     x_sine2 = generate_x_sine_table(amplitude=50, length=256)
     write_asm_byte_table(
         '../sinus-snowflake-x2-data.i',
@@ -102,7 +103,8 @@ def main():
     )
     
     # Generate Y-speed variation table
-    print("  - Y-speed variation table...")
+    # NOTE: Reserved for future enhancement - not currently used in main.asm
+    print("  - Y-speed variation table [reserved]...")
     y_speed = generate_y_speed_table(base_speed=1, variation=3, length=256)
     write_asm_byte_table(
         '../snowflake-y-speed-data.i',
