@@ -13,6 +13,11 @@ First demo after over 10 years of C64 abscence. It will be a certified
 
 Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 
+## 2. Alien Fart
+A humorous sprite-based animation featuring an alien in a flying saucer eating donuts. A man walks by eating a hamburger. The alien flies down and farts so loud that the man's hamburger flies 20 meters away!
+
+Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/alien-fart.
+
 # Useful External Links
 - [C64 Studio IDE](https://www.georg-rottensteiner.de/de/c64.html)
 - [Codebase64](https://codebase64.org/)
