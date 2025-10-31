@@ -15,6 +15,9 @@ demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
 
+# Coordinate export files
+test/opengl-morphing-models/coordinates.txt
+
 # Build artifacts
 *.o
 *.obj
