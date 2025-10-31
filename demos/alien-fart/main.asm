@@ -164,7 +164,8 @@ setup_sprites:
 ; === Interrupt Handler ===
 irq:
     ; Acknowledge interrupt
-    asl $d019
+    lda $d019
+    sta $d019
 
     ; Update animation
     jsr update_animation
@@ -256,7 +257,7 @@ state_2_alien_flies:
     sta $d002       ; Saucer X
     
     lda frame_counter
-    lsl
+    asl             ; Multiply by 2 (shift left)
     clc
     adc #100
     sta $d001       ; Alien Y
