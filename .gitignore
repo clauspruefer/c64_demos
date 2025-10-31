@@ -15,9 +15,13 @@ demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
 tools/alien-animation/test_frames/
+tools/alien-animation/video_frames/
 
 # Generated video files
 tools/alien-animation/alien_animation.mp4
+
+# Generation logs
+tools/alien-animation/animation_generation.log
 
 # Build artifacts
 *.o

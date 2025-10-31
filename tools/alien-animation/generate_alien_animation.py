@@ -331,7 +331,7 @@ def main():
     """Generate the animation"""
     # Import moviepy here so it's only needed when actually generating
     try:
-        import moviepy.editor as mpy
+        from moviepy import VideoClip
     except ImportError:
         print("Error: moviepy not installed. Install with: pip install moviepy")
         sys.exit(1)
@@ -345,7 +345,7 @@ def main():
     animation = AlienAnimation(WIDTH, HEIGHT, FPS)
     
     # Generate video
-    clip = mpy.VideoClip(animation.make_frame, duration=DURATION)
+    clip = VideoClip(animation.make_frame, duration=DURATION)
     
     # Output file
     output_file = "alien_animation.mp4"
