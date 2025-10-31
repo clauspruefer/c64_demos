@@ -15,7 +15,7 @@ demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
 tools/frankenstein-animation/frames/
-tools/frankenstein-animation/frankenstein_montage.png
+tools/frankenstein-animation/*.png
 tools/frankenstein-animation/viewer.html
 
 # Build artifacts
