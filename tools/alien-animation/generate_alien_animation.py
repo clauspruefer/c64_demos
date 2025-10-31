@@ -206,26 +206,27 @@ class AlienAnimation:
         # Draw expanding circles for burp effect
         for i in range(5):
             r = radius + i * 20
-            color = (200, 255, 200, max(0, alpha - i * 25))
+            outline_alpha = max(0, alpha - i * 25)
             draw.ellipse([x - r, y - r, x + r, y + r],
-                        outline=(150, 255, 150, alpha), width=3)
+                        outline=(150, 255, 150, outline_alpha), width=3)
     
     def draw_fart_effect(self, draw, x, y, size, alpha=128):
         """Draw fart cloud effect"""
         # Draw wavy greenish clouds
         for i in range(3):
             offset_y = i * 30
-            color = (200, 255, 150, max(0, alpha - i * 40))
+            fill_alpha = max(0, alpha//2 - i * 20)
+            outline_alpha = max(0, alpha - i * 40)
             draw.ellipse([x - size - i*10, y + offset_y - size//2, 
                          x + size + i*10, y + offset_y + size//2],
-                        fill=(200, 255, 150, alpha//2),
-                        outline=(150, 200, 100, alpha), width=2)
+                        fill=(200, 255, 150, fill_alpha),
+                        outline=(150, 200, 100, outline_alpha), width=2)
     
     def make_frame(self, t):
         """Generate a single frame at time t"""
-        # Create image
-        img = Image.new('RGB', (self.width, self.height), color=(135, 206, 235))
-        draw = ImageDraw.Draw(img, 'RGBA')
+        # Create image with RGBA mode to support alpha transparency
+        img = Image.new('RGBA', (self.width, self.height), color=(135, 206, 235, 255))
+        draw = ImageDraw.Draw(img)
         
         # Ground
         draw.rectangle([0, self.height - 200, self.width, self.height],
@@ -319,7 +320,11 @@ class AlienAnimation:
             alien_pos = self.draw_flying_saucer(draw, saucer_x, saucer_y)
             self.draw_alien(draw, alien_pos[0], alien_pos[1], drinking=False)
         
-        return np.array(img)
+        # Convert RGBA to RGB for video output
+        rgb_img = Image.new('RGB', img.size, (255, 255, 255))
+        rgb_img.paste(img, mask=img.split()[3])  # Use alpha channel as mask
+        
+        return np.array(rgb_img)
 
 def main():
     """Generate the animation"""
