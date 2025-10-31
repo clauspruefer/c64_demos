@@ -14,6 +14,10 @@ __pycache__/
 demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
+tools/alien-animation/test_frames/
+
+# Generated video files
+tools/alien-animation/alien_animation.mp4
 
 # Build artifacts
 *.o

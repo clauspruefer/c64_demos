@@ -17,3 +17,11 @@ See [mandelbrot-zoom/README.md](mandelbrot-zoom/README.md) for details.
 Located in: `rasterline-opcode-generator/`
 
 Generator for rasterline effects and opcodes.
+
+### Alien Animation Generator
+
+Located in: `alien-animation/`
+
+Generates a Full-HD (1920x1080) comedic animation featuring an alien in a flying saucer with burp and fart effects. Creates a 15-second MP4 video with procedurally generated graphics showing an alien drinking beer, encountering a human with a cheeseburger, and causing chaos with bodily functions.
+
+See [alien-animation/README.md](alien-animation/README.md) for details.
