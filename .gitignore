@@ -12,6 +12,7 @@ __pycache__/
 
 # Generated PNG animation frames
 demos/floodlights/frames/
+demos/cubism/ninja-eyes/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
 

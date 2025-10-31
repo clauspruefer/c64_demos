@@ -91,14 +91,34 @@ LOAD "NINJA-EYES.PRG",8,1
 RUN
 ```
 
+## Exporting Animation Frames
+
+To export individual animation frames as PNG images:
+
+```bash
+cd demos/cubism/ninja-eyes
+python3 export_frames.py
+```
+
+This generates:
+- `frames/eye_frame.png` - Static eye graphic (1 frame)
+- `frames/cube_frame_000.png` to `frames/cube_frame_063.png` - Cube rotation frames (64 frames)
+- `frames/scene_frame_000.png` to `frames/scene_frame_063.png` - Full scene frames (64 frames)
+
+Total: 129 PNG images showing the complete animation sequence.
+
+The frames are rendered at 4× scale (1280×800 pixels for full scene) for better visibility.
+
 ## Files
 
 - `main.asm` - Main assembly source code (C64 6510 assembly)
 - `generate_cube_rotation.py` - Python script to generate 3D cube rotation data
 - `generate_eye_data.py` - Python script to generate eye character/color data
+- `export_frames.py` - Python script to export animation frames as PNG images
 - `cube-rotation-data.i` - Generated rotation data (included by main.asm)
 - `eye-data.i` - Generated eye graphics data (included by main.asm)
 - `ninja-eyes.prg` - Compiled C64 program (excluded from git)
+- `frames/` - Exported PNG animation frames (excluded from git)
 - `README.md` - This documentation file
 
 ## Algorithm Details
