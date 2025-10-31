@@ -1,6 +1,6 @@
-# Three Spheres OpenGL 3D Display
+# Three Spheres OpenGL 3D Display - GL_POINTS Vertex Model
 
-This OpenGL C++ program displays **3 overlapping spheres** forming a **single cohesive 3D model** (similar to a snowman shape) that can have textures applied to it.
+This OpenGL C++ program displays **3 overlapping spheres as a single GL_POINTS-based vertex model**. The spheres form a cohesive 3D model where each vertex represents approximately a single pixel in 3D-2D transformation, and all vertices are exportable via gluProject() with their z-coordinates.
 
 ## Sphere Specifications
 
@@ -23,9 +23,19 @@ This OpenGL C++ program displays **3 overlapping spheres** forming a **single co
 
 ## Key Features
 
-- **Overlapping geometry**: Spheres are positioned to overlap and form a single unified 3D model
-- **Texture-ready**: The compound surface is suitable for texture mapping
-- **Size variation**: Three different sphere sizes (1.5, 1.02, 1.4) create visual hierarchy
+- **GL_POINTS rendering**: Single vertex model using OpenGL points instead of solid spheres
+- **Pixel-level granularity**: Each vertex represents approximately one pixel on screen
+- **Occlusion culling**: Overlapped/non-visible vertices are omitted from the model
+- **gluProject() compatible**: All vertices can be projected to screen coordinates with z-depth
+- **Vertex export**: Press 'E' to export all vertices with 3D and projected screen coordinates
+- **Unified model**: Three spheres combined into a single point-based representation
+
+## Vertex Model Details
+
+- **Total vertices**: ~400,000 points (varies based on sphere sizes)
+- **Vertex density**: Automatically calculated for pixel-level accuracy
+- **Occlusion handling**: Internal overlapping vertices are excluded
+- **Data export format**: `x y z r g b screenX screenY screenZ`
 
 ## Build and Run
 
@@ -34,6 +44,23 @@ cd tools/three-spheres
 make
 ./three-spheres
 ```
+
+### Keyboard Controls
+
+- **E**: Export vertices to `vertices.txt` file
+- **ESC**: Exit program
+
+### Vertex Export
+
+When you press 'E', the program exports all vertices to `vertices.txt` with the following format:
+```
+x y z r g b screenX screenY screenZ
+```
+
+Each line contains:
+- `x y z`: 3D world coordinates
+- `r g b`: Color values (0.0 to 1.0)
+- `screenX screenY screenZ`: Projected 2D screen coordinates and depth
 
 ## Dependencies
 
@@ -48,12 +75,14 @@ sudo apt-get install freeglut3-dev libglu1-mesa-dev mesa-common-dev
 
 ## Technical Details
 
-- ✓ OpenGL 3D rendering with proper depth testing
-- ✓ Three overlapping spheres forming a single 3D model
-- ✓ Lighting and shading for realistic 3D appearance
-- ✓ Static (non-animated) display
-- ✓ Overlapping geometry creates a compound surface suitable for texturing
-- ✓ Camera positioned to view the complete unified model
+- ✓ OpenGL GL_POINTS rendering for vertex-based model
+- ✓ Three overlapping spheres combined into single point cloud
+- ✓ Pixel-level vertex density for accurate screen representation
+- ✓ Depth testing enabled for proper 3D occlusion
+- ✓ Automatic occlusion culling of overlapped vertices
+- ✓ gluProject() integration for 3D-to-2D coordinate mapping
+- ✓ Each vertex exportable with full 3D and screen coordinates
+- ✓ Point smoothing enabled for better visual appearance
 
 ## Files
 
