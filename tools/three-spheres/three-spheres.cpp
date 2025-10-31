@@ -15,13 +15,13 @@ namespace Spheres {
     const float SPHERE1_RADIUS = 1.5f;
     const float SPHERE1_Y = 1.5f;  // Positioned to extend from 0 to 3.0
     
-    // Sphere 2: Small, in middle - overlaps with Sphere 1
-    const float SPHERE2_RADIUS = 0.6f;
-    const float SPHERE2_Y = -0.3f;  // Overlaps with Sphere 1 (extends from -0.9 to 0.3)
+    // Sphere 2: Medium, in middle - overlaps with Sphere 1 (increased by 70%)
+    const float SPHERE2_RADIUS = 1.02f;
+    const float SPHERE2_Y = -0.3f;  // Overlaps with Sphere 1 (extends from -1.32 to 0.72)
     
-    // Sphere 3: Medium, at bottom - overlaps with Sphere 2
-    const float SPHERE3_RADIUS = 1.0f;
-    const float SPHERE3_Y = -1.5f;  // Overlaps with Sphere 2 (extends from -2.5 to -0.5)
+    // Sphere 3: Large, at bottom - overlaps with Sphere 2 (increased by 40%)
+    const float SPHERE3_RADIUS = 1.4f;
+    const float SPHERE3_Y = -1.5f;  // Overlaps with Sphere 2 (extends from -2.9 to -0.1)
     
     void drawSphere(float x, float y, float z, float radius, float r, float g, float b) {
         glPushMatrix();

@@ -10,22 +10,22 @@ This OpenGL C++ program displays **3 overlapping spheres** forming a **single co
 - **Y Range**: `0.0 to 3.0`
 
 ### Sphere 2 (Green) - Middle (Overlapping)
-- **Radius**: `0.6`
+- **Radius**: `1.02` (increased by 70% from 0.6)
 - **Y Position**: `-0.3`
-- **Y Range**: `-0.9 to 0.3`
-- **Note**: Overlaps with Sphere 1 (both occupy Y range 0.0 to 0.3)
+- **Y Range**: `-1.32 to 0.72`
+- **Note**: Overlaps with Sphere 1 (both occupy Y range 0.0 to 0.72)
 
 ### Sphere 3 (Blue) - Bottom (Overlapping)
-- **Radius**: `1.0`
+- **Radius**: `1.4` (increased by 40% from 1.0)
 - **Y Position**: `-1.5`
-- **Y Range**: `-2.5 to -0.5`
-- **Note**: Overlaps with Sphere 2 (both occupy Y range -0.9 to -0.5)
+- **Y Range**: `-2.9 to -0.1`
+- **Note**: Overlaps with Sphere 2 (both occupy Y range -1.32 to -0.1)
 
 ## Key Features
 
 - **Overlapping geometry**: Spheres are positioned to overlap and form a single unified 3D model
 - **Texture-ready**: The compound surface is suitable for texture mapping
-- **Size variation**: Three different sphere sizes (1.5, 0.6, 1.0) create visual hierarchy
+- **Size variation**: Three different sphere sizes (1.5, 1.02, 1.4) create visual hierarchy
 
 ## Build and Run
 
