@@ -5,7 +5,7 @@ Creates a 1920x1080 pixel MP4 animation showing:
 - Alien sitting in flying saucer drinking 3 beer bottles in parallel
 - Human with cheeseburger passing by
 - Alien burps, sending cheeseburger flying 30 meters
-- Alien farts, making rastafari hair fly like tornado
+- Alien farts, making Rastafari hair fly like tornado
 """
 
 import numpy as np
@@ -41,10 +41,10 @@ class AlienAnimation:
         draw.ellipse([x - w, y - h//2, x + w, y + h//2], 
                      fill=(180, 180, 200), outline=(100, 100, 120), width=3)
         
-        # Dome
+        # Dome (semi-transparent)
         dome_h = int(40 * scale)
         draw.ellipse([x - w//2, y - h//2 - dome_h, x + w//2, y - h//2 + 10], 
-                     fill=(150, 200, 250, 200), outline=(80, 120, 160), width=2)
+                     fill=(150, 200, 250, 200), outline=(80, 120, 160, 255), width=2)
         
         # Lights
         for i in range(-2, 3):
@@ -115,7 +115,7 @@ class AlienAnimation:
                          fill=(255, 215, 0))
     
     def draw_human(self, draw, x, y, scale=1.0, hair_angle=0):
-        """Draw a human with rastafari hair"""
+        """Draw a human with Rastafari hair"""
         # Head
         head_r = int(30 * scale)
         draw.ellipse([x - head_r, y - head_r, x + head_r, y + head_r],
@@ -321,8 +321,9 @@ class AlienAnimation:
             self.draw_alien(draw, alien_pos[0], alien_pos[1], drinking=False)
         
         # Convert RGBA to RGB for video output
-        rgb_img = Image.new('RGB', img.size, (255, 255, 255))
-        rgb_img.paste(img, mask=img.split()[3])  # Use alpha channel as mask
+        # Create RGB image and composite the RGBA image onto it
+        rgb_img = Image.new('RGB', img.size, (135, 206, 235))
+        rgb_img.paste(img, (0, 0), img)  # img acts as both source and mask
         
         return np.array(rgb_img)
 

@@ -6,10 +6,10 @@ This tool generates a Full-HD (1920x1080) animation featuring an alien in a flyi
 
 The animation tells the story of:
 1. An alien sitting in his flying saucer, drinking 3 beer bottles in parallel
-2. A human with rastafari hair walks by eating a big cheeseburger
+2. A human with Rastafari hair walks by eating a big cheeseburger
 3. The flying saucer navigates (appearing invisible to the human) directly in front of his head
 4. The alien burps so powerfully that the man's cheeseburger flies 30 meters away
-5. The alien then farts, causing the man's rastafari hair to fly around like a tornado
+5. The alien then farts, causing the man's Rastafari hair to fly around like a tornado
 
 ## Features
 
@@ -82,7 +82,7 @@ SCENE_5_DURATION = 5.0  # Fart effect
 - Saucer hovers peacefully
 
 ### Scene 2 (3-5 seconds)
-- Human with rastafari hair (red, yellow, green dreads) walks in from right
+- Human with Rastafari hair (red, yellow, green dreads) walks in from right
 - Carrying a large cheeseburger
 - Alien continues drinking
 
