@@ -46,6 +46,14 @@ INITIAL_DISTANCE = 100.0  # Arbitrary units
 FINAL_DISTANCE = 1.0  # Very close to camera
 INITIAL_FLY_SIZE = 0.3  # Small fly at start
 
+# Animation motion parameters
+APPROACH_RATE = 5.0  # Rate of exponential approach (higher = faster)
+WOBBLE_FREQ_X = 0.3  # Horizontal wobble frequency
+WOBBLE_AMPLITUDE_X = 5  # Horizontal wobble amplitude in pixels
+WOBBLE_FREQ_Y = 0.2  # Vertical wobble frequency
+WOBBLE_AMPLITUDE_Y = 3  # Vertical wobble amplitude in pixels
+WING_FLAP_SPEED = 0.5  # Wing flapping frequency
+
 def draw_hexagon(draw, center_x, center_y, radius, color):
     """Draw a hexagon to represent one facet of the compound eye"""
     points = []
@@ -144,7 +152,7 @@ def generate_frame(frame_num):
     # Calculate fly's distance from camera (exponential approach)
     # Using exponential for more dramatic effect as fly gets very close
     progress = frame_num / FRAMES
-    distance = INITIAL_DISTANCE * math.exp(-5 * progress)
+    distance = INITIAL_DISTANCE * math.exp(-APPROACH_RATE * progress)
     
     # Calculate fly size based on distance (inverse square law-ish for perspective)
     fly_size = INITIAL_FLY_SIZE * (INITIAL_DISTANCE / distance)
@@ -154,14 +162,14 @@ def generate_frame(frame_num):
     center_y = HEIGHT / 2
     
     # Add slight wobble to make flight more realistic
-    wobble_x = math.sin(frame_num * 0.3) * 5 * (1 - progress)
-    wobble_y = math.cos(frame_num * 0.2) * 3 * (1 - progress)
+    wobble_x = math.sin(frame_num * WOBBLE_FREQ_X) * WOBBLE_AMPLITUDE_X * (1 - progress)
+    wobble_y = math.cos(frame_num * WOBBLE_FREQ_Y) * WOBBLE_AMPLITUDE_Y * (1 - progress)
     
     fly_x = center_x + wobble_x
     fly_y = center_y + wobble_y
     
     # Wing flapping animation
-    wing_angle = frame_num * 0.5
+    wing_angle = frame_num * WING_FLAP_SPEED
     
     # Draw different parts based on distance
     if fly_size < 30:
