@@ -4,10 +4,16 @@
 #include <stdlib.h>
 #include <GL/glut.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 
 #include <cmath>
 #include <iostream>
 #include <vector>
+
+// Define M_PI if not already defined (for portability)
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 using namespace std;
 
