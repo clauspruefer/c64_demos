@@ -12,6 +12,14 @@ Generates a 4000-frame endless zoom animation into the Mandelbrot set using the 
 
 See [mandelbrot-zoom/README.md](mandelbrot-zoom/README.md) for details.
 
+### Cow Fart Animation Generator
+
+Located in: `cow-fart-animation/`
+
+Generates a hilarious 32-frame animation of a man standing behind a farting cow with hurricane-force wind effects blowing his hair. Uses the Colodore C64 palette at 160x200 resolution (C64 multicolor mode).
+
+See [cow-fart-animation/README.md](cow-fart-animation/README.md) for details.
+
 ### Rasterline Opcode Generator
 
 Located in: `rasterline-opcode-generator/`

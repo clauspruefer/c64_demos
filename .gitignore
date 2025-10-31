@@ -14,6 +14,7 @@ __pycache__/
 demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
+tools/cow-fart-animation/frames/
 
 # Build artifacts
 *.o
