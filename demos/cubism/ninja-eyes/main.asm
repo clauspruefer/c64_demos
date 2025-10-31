@@ -3,8 +3,7 @@
 ;
 ; Memory Map:
 ; $0801-$080c : BASIC stub
-; $0c00+      : Main program
-; $1000+      : Character set data
+; $080e+      : Main program
 ; $2000+      : Cube rotation frame data
 
 !to "ninja-eyes.prg", cbm
@@ -12,7 +11,8 @@
 
 * = $0801
 
-; BASIC stub: 10 SYS 2062 (SYS $080e)
+; BASIC stub: 10 SYS 2062
+; 2062 decimal = $080e hex (start of main program)
 !byte $0c, $08  ; Link address
 !byte $0a, $00  ; Line number 10
 !byte $9e       ; SYS token
@@ -64,6 +64,8 @@ clear_screen:
     lda #$20  ; Space character
     ldx #0
 clear_loop:
+    ; Clear 4 pages of screen memory (1000 bytes total)
+    ; Loop runs 256 times: 256 x 4 = 1024 bytes (covers entire screen)
     sta $0400,x
     sta $0500,x
     sta $0600,x

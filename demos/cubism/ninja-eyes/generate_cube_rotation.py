@@ -6,6 +6,9 @@ Creates rotation frames for morphing eye pupils into rotating cubes.
 
 import math
 
+# Constants
+EPSILON = 0.01  # Small value to avoid division by zero
+
 # Cube vertices (centered at origin)
 cube_vertices = [
     [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],  # back face
@@ -40,7 +43,7 @@ def rotate_z(point, angle):
 def project_3d_to_2d(point, distance=4):
     """Simple perspective projection"""
     if point[2] + distance == 0:
-        point[2] = 0.01
+        point[2] = EPSILON
     factor = distance / (distance + point[2])
     x = int(point[0] * factor * 3 + 12)  # scale and center (12x8 area for pupil)
     y = int(point[1] * factor * 3 + 4)

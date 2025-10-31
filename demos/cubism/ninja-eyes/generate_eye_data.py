@@ -4,6 +4,10 @@ Generate eye character and color data for ninja eyes demo.
 Creates detailed eye graphics with pupils.
 """
 
+# C64 Color constants
+WHITE = 0x01
+DARK_GRAY = 0x0b
+
 # Eye is 8 characters wide x 3 characters tall
 # Using C64 PETSCII characters to draw the eye
 
@@ -51,9 +55,9 @@ def generate_eye_data():
     eye_chars = eye_top + eye_middle + eye_bottom
     
     # Color data - white for eye, dark gray for pupil
-    color_top = [0x01] * 8  # White
-    color_middle = [0x01, 0x01, 0x0b, 0x0b, 0x0b, 0x01, 0x01, 0x01]  # White with gray pupils
-    color_bottom = [0x01] * 8  # White
+    color_top = [WHITE] * 8
+    color_middle = [WHITE, WHITE, DARK_GRAY, DARK_GRAY, DARK_GRAY, WHITE, WHITE, WHITE]
+    color_bottom = [WHITE] * 8
     
     eye_colors = color_top + color_middle + color_bottom
     
