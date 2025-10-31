@@ -11,13 +11,13 @@ using namespace std;
 
 // Sphere properties - positioned to overlap and form a single 3D model
 namespace Spheres {
-    // Sphere 1: Big, at top
+    // Sphere 1: Big, at top (moved down 20%)
     const float SPHERE1_RADIUS = 1.5f;
-    const float SPHERE1_Y = 1.5f;  // Positioned to extend from 0 to 3.0
+    const float SPHERE1_Y = 1.2f;  // Moved down 20% from 1.5 (extends from -0.3 to 2.7)
     
-    // Sphere 2: Medium, in middle - overlaps with Sphere 1 (increased by 70%)
+    // Sphere 2: Medium, in middle - overlaps with Sphere 1 (increased by 70%, moved down 30%)
     const float SPHERE2_RADIUS = 1.02f;
-    const float SPHERE2_Y = -0.3f;  // Overlaps with Sphere 1 (extends from -1.32 to 0.72)
+    const float SPHERE2_Y = -0.39f;  // Moved down 30% from -0.3 (extends from -1.41 to 0.63)
     
     // Sphere 3: Large, at bottom - overlaps with Sphere 2 (increased by 40%)
     const float SPHERE3_RADIUS = 1.4f;
