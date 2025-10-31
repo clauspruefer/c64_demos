@@ -130,16 +130,16 @@ update_colors:
     sta source_ptr+1
     
     ; Add 232 * frame_index to address
-    ; 232 = 256 - 24
-    ; So we subtract 24 * frame_index
+    ; 232 = 256 - 24, so we subtract 24 * frame_index
+    ; Calculate frame_index * 24 using shifts and additions
     lda frame_index
     asl             ; * 2
     asl             ; * 4
     asl             ; * 8
-    sta temp_val
+    sta temp_val    ; Save * 8
     asl             ; * 16
     clc
-    adc temp_val    ; * 24
+    adc temp_val    ; * 16 + * 8 = * 24
     
     ; Subtract from source_ptr
     sta temp_val
