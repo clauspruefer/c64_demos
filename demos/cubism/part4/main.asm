@@ -216,15 +216,9 @@ init_sprite_pos
   sta sprite_y_pos, x
   lda #0
   sta sprite_x_phase, x
-  sta sprite_y_phase, x
   inx
   cpx #NUM_SPRITES
   bne init_sprite_pos
-
-; Initialize sine table indices
-  lda #0
-  sta sine_index_x
-  sta sine_index_y
 
   rts
 
@@ -293,21 +287,23 @@ no_wrap_y
 ; ============================================================================
 ; Position Sprites (Level 1 - Top sprites)
 ; ============================================================================
+; VIC sprite registers are at $d000-$d00f (X0,Y0,X1,Y1...X7,Y7)
+; Using indexed addressing with base VIC_SPRITE_X ($d000)
 
 position_sprites_level1
 
   ; Position first 8 sprites (level 1)
-  ldy #0  ; Sprite number
-  ldx #0  ; VIC register offset
+  ldy #0  ; Sprite number (0-7)
+  ldx #0  ; VIC register offset (0-15)
 pos_loop1
-  ; Set X position
+  ; Set X position at $d000+offset
   lda sprite_x_pos, y
-  sta VIC_SPRITE_X, x
+  sta $d000, x  ; VIC_SPRITE_X + offset
   inx
   
-  ; Set Y position
+  ; Set Y position at $d001+offset (next register)
   lda sprite_y_pos, y
-  sta VIC_SPRITE_X, x
+  sta $d000, x  ; VIC_SPRITE_X + offset (reaches Y register)
   inx
   
   iny
@@ -325,15 +321,16 @@ irq_multiplex2
   sta $d019
   
   ; Reposition sprites for level 2 (Y positions only)
-  ldy #0  ; Sprite number
-  ldx #1  ; Start at Y register ($d001)
+  ; Only need to update Y coords, X coords stay the same
+  ldy #0  ; Sprite number (0-7)
+  ldx #1  ; Start at first Y register ($d001)
 pos_loop2
   lda sprite_y_pos, y
   clc
-  adc #50  ; Offset for multiplex
-  sta VIC_SPRITE_X, x  ; Actually writes to Y register
+  adc #50  ; Offset for multiplex level 2
+  sta $d000, x  ; Write to $d001, $d003, $d005, etc. (Y registers)
   inx
-  inx  ; Skip to next Y register
+  inx  ; Skip to next Y register (skip over X register)
   iny
   cpy #NUM_SPRITES
   bne pos_loop2
@@ -353,13 +350,13 @@ irq_multiplex3
   sta $d019
   
   ; Reposition sprites for level 3 (Y positions only)
-  ldy #0  ; Sprite number
-  ldx #1  ; Start at Y register ($d001)
+  ldy #0  ; Sprite number (0-7)
+  ldx #1  ; Start at first Y register ($d001)
 pos_loop3
   lda sprite_y_pos, y
   clc
-  adc #100  ; Offset for multiplex
-  sta VIC_SPRITE_X, x  ; Actually writes to Y register
+  adc #100  ; Offset for multiplex level 3
+  sta $d000, x  ; Write to $d001, $d003, $d005, etc. (Y registers)
   inx
   inx  ; Skip to next Y register
   iny
@@ -381,13 +378,13 @@ irq_multiplex4
   sta $d019
   
   ; Reposition sprites for level 4 (Y positions only)
-  ldy #0  ; Sprite number
-  ldx #1  ; Start at Y register ($d001)
+  ldy #0  ; Sprite number (0-7)
+  ldx #1  ; Start at first Y register ($d001)
 pos_loop4
   lda sprite_y_pos, y
   clc
-  adc #150  ; Offset for multiplex
-  sta VIC_SPRITE_X, x  ; Actually writes to Y register
+  adc #150  ; Offset for multiplex level 4
+  sta $d000, x  ; Write to $d001, $d003, $d005, etc. (Y registers)
   inx
   inx  ; Skip to next Y register
   iny
@@ -412,11 +409,6 @@ pos_loop4
 sprite_x_pos      !fill NUM_SPRITES, 0
 sprite_y_pos      !fill NUM_SPRITES, 0
 sprite_x_phase    !fill NUM_SPRITES, 0
-sprite_y_phase    !fill NUM_SPRITES, 0
-
-; Sine table indices
-sine_index_x      !byte 0
-sine_index_y      !byte 0
 
 ; ============================================================================
 ; Include Generated Data Files
