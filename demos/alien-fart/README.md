@@ -65,6 +65,29 @@ sudo apt-get install acme
 # Or download from: http://sourceforge.net/p/acme-crossass/
 ```
 
+## Generating Animation Frames
+
+To generate PNG files for each frame of the animation:
+
+```bash
+# Install Python dependencies
+pip3 install Pillow
+
+# Generate all 270 frames
+./generate_frames.py
+```
+
+This will create a `frames/` directory containing:
+- **270 PNG files** (frame_0000.png to frame_0269.png)
+- Each frame is **320x200 pixels** (C64 screen resolution)
+- Organized by animation state:
+  - Frames 0-59: Alien eating donuts
+  - Frames 60-179: Man walking with hamburger
+  - Frames 180-209: Alien flies down and farts
+  - Frames 210-269: Hamburger flying away
+
+You can view a preview by opening `preview.html` in your browser after generating the frames.
+
 ## Running
 
 Load the generated `alien-fart.prg` file in the VICE C64 emulator or transfer it to real C64 hardware.
