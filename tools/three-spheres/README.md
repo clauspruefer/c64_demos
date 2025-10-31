@@ -1,25 +1,31 @@
 # Three Spheres OpenGL 3D Display
 
-This OpenGL C++ program displays **3 static (non-animated) spheres** with different sizes and Y positions.
+This OpenGL C++ program displays **3 overlapping spheres** forming a **single cohesive 3D model** (similar to a snowman shape) that can have textures applied to it.
 
 ## Sphere Specifications
 
-### Sphere 1 (Red) - Large, Top Position
+### Sphere 1 (Red) - Top
 - **Radius**: `1.5`
-- **Y Position**: `3.0`
-- **Y Range**: `1.5 to 4.5`
+- **Y Position**: `1.5`
+- **Y Range**: `0.0 to 3.0`
 
-### Sphere 2 (Green) - Small, Middle Position
+### Sphere 2 (Green) - Middle (Overlapping)
 - **Radius**: `0.6`
-- **Y Position**: `0.5`
-- **Y Range**: `-0.1 to 1.1`
-- **Note**: Top position (1.1) is smaller than Sphere 1's end position (1.5) ✓
+- **Y Position**: `-0.3`
+- **Y Range**: `-0.9 to 0.3`
+- **Note**: Overlaps with Sphere 1 (both occupy Y range 0.0 to 0.3)
 
-### Sphere 3 (Blue) - Medium, Bottom Position
+### Sphere 3 (Blue) - Bottom (Overlapping)
 - **Radius**: `1.0`
-- **Y Position**: `-2.5`
-- **Y Range**: `-3.5 to -1.5`
-- **Note**: Bigger than Sphere 2 (0.6) but smaller than Sphere 1 (1.5) ✓
+- **Y Position**: `-1.5`
+- **Y Range**: `-2.5 to -0.5`
+- **Note**: Overlaps with Sphere 2 (both occupy Y range -0.9 to -0.5)
+
+## Key Features
+
+- **Overlapping geometry**: Spheres are positioned to overlap and form a single unified 3D model
+- **Texture-ready**: The compound surface is suitable for texture mapping
+- **Size variation**: Three different sphere sizes (1.5, 0.6, 1.0) create visual hierarchy
 
 ## Build and Run
 
@@ -40,16 +46,14 @@ On Ubuntu/Debian:
 sudo apt-get install freeglut3-dev libglu1-mesa-dev mesa-common-dev
 ```
 
-## Features
+## Technical Details
 
 - ✓ OpenGL 3D rendering with proper depth testing
-- ✓ Three spheres with distinct sizes and positions
+- ✓ Three overlapping spheres forming a single 3D model
 - ✓ Lighting and shading for realistic 3D appearance
 - ✓ Static (non-animated) display
-- ✓ Positioned according to Y-axis requirements:
-  - Sphere 1: Top of screen (largest)
-  - Sphere 2: Middle (smallest, top Y < Sphere 1 bottom Y)
-  - Sphere 3: Bottom (medium size)
+- ✓ Overlapping geometry creates a compound surface suitable for texturing
+- ✓ Camera positioned to view the complete unified model
 
 ## Files
 

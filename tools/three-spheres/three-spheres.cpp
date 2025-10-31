@@ -9,19 +9,19 @@
 
 using namespace std;
 
-// Sphere properties
+// Sphere properties - positioned to overlap and form a single 3D model
 namespace Spheres {
     // Sphere 1: Big, at top
     const float SPHERE1_RADIUS = 1.5f;
-    const float SPHERE1_Y = 3.0f;
+    const float SPHERE1_Y = 1.5f;  // Positioned to extend from 0 to 3.0
     
-    // Sphere 2: Small, in middle (top Y range smaller than Sphere 1's bottom)
+    // Sphere 2: Small, in middle - overlaps with Sphere 1
     const float SPHERE2_RADIUS = 0.6f;
-    const float SPHERE2_Y = 0.5f;  // Top is at 0.5 + 0.6 = 1.1, which is < Sphere1's bottom at 3.0 - 1.5 = 1.5
+    const float SPHERE2_Y = -0.3f;  // Overlaps with Sphere 1 (extends from -0.9 to 0.3)
     
-    // Sphere 3: Medium (bigger than Sphere 2, smaller than Sphere 1), at bottom
+    // Sphere 3: Medium, at bottom - overlaps with Sphere 2
     const float SPHERE3_RADIUS = 1.0f;
-    const float SPHERE3_Y = -2.5f;
+    const float SPHERE3_Y = -1.5f;  // Overlaps with Sphere 2 (extends from -2.5 to -0.5)
     
     void drawSphere(float x, float y, float z, float radius, float r, float g, float b) {
         glPushMatrix();
@@ -48,10 +48,10 @@ void display() {
     
     glLoadIdentity();
     
-    // Position camera to view all three spheres
+    // Position camera to view the combined 3D model
     gluLookAt(
-        5.0, 0.5, 8.0,   // Eye position - slightly to the right and above
-        0.0, 0.5, 0.0,   // Look at center (middle of vertical range)
+        5.0, 0.0, 8.0,   // Eye position - slightly to the right
+        0.0, 0.0, 0.0,   // Look at center of the model
         0.0, 1.0, 0.0    // Up vector
     );
     
