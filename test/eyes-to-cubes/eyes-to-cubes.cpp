@@ -40,7 +40,7 @@ void drawSphere(float radius, int slices, int stacks) {
 }
 
 // Draw an eye (sclera, iris, and pupil)
-void drawEye(float pupilColor[3]) {
+void drawEye(const float pupilColor[3]) {
     float morphFactor = getMorphFactor();
     
     // Sclera (white part of eye)
@@ -72,7 +72,7 @@ void drawEye(float pupilColor[3]) {
 }
 
 // Draw a cube with colored faces
-void drawColoredCube(float color[3]) {
+void drawColoredCube(const float color[3]) {
     float size = 0.8f;
     
     glBegin(GL_QUADS);
@@ -123,7 +123,7 @@ void drawColoredCube(float color[3]) {
 }
 
 // Draw a morphing eye/cube
-void drawMorphingObject(float pupilColor[3], float offsetX) {
+void drawMorphingObject(const float pupilColor[3], float offsetX) {
     float morphFactor = getMorphFactor();
     
     glPushMatrix();
@@ -201,10 +201,10 @@ void display() {
     glMaterialfv(GL_FRONT, GL_SHININESS, matShininess);
     
     // Draw left morphing object
-    drawMorphingObject((float*)PUPIL_COLOR_LEFT, -2.0f);
+    drawMorphingObject(PUPIL_COLOR_LEFT, -2.0f);
     
     // Draw right morphing object
-    drawMorphingObject((float*)PUPIL_COLOR_RIGHT, 2.0f);
+    drawMorphingObject(PUPIL_COLOR_RIGHT, 2.0f);
     
     glDisable(GL_LIGHTING);
     
