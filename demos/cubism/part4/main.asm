@@ -297,21 +297,21 @@ no_wrap_y
 position_sprites_level1
 
   ; Position first 8 sprites (level 1)
-  ldx #0
+  ldy #0  ; Sprite number
+  ldx #0  ; VIC register offset
 pos_loop1
   ; Set X position
-  lda sprite_x_pos, x
+  lda sprite_x_pos, y
   sta VIC_SPRITE_X, x
-  sta VIC_SPRITE_X, x  ; Write twice for X coord
+  inx
   
   ; Set Y position
-  lda sprite_y_pos, x
-  sta VIC_SPRITE_Y, x
-  sta VIC_SPRITE_Y, x  ; Write twice for Y coord
-  
+  lda sprite_y_pos, y
+  sta VIC_SPRITE_X, x
   inx
-  inx  ; Skip to next sprite (X,Y pairs)
-  cpx #16  ; 8 sprites * 2 registers
+  
+  iny
+  cpy #NUM_SPRITES
   bne pos_loop1
 
   rts
@@ -324,17 +324,18 @@ irq_multiplex2
   lda VIC_RASTER
   sta $d019
   
-  ; Reposition sprites for level 2
-  ldx #0
+  ; Reposition sprites for level 2 (Y positions only)
+  ldy #0  ; Sprite number
+  ldx #1  ; Start at Y register ($d001)
 pos_loop2
-  lda sprite_y_pos, x
+  lda sprite_y_pos, y
   clc
   adc #50  ; Offset for multiplex
-  sta VIC_SPRITE_Y, x
-  sta VIC_SPRITE_Y, x
+  sta VIC_SPRITE_X, x  ; Actually writes to Y register
   inx
-  inx
-  cpx #16
+  inx  ; Skip to next Y register
+  iny
+  cpy #NUM_SPRITES
   bne pos_loop2
   
   ; Setup next IRQ
@@ -351,17 +352,18 @@ irq_multiplex3
   lda VIC_RASTER
   sta $d019
   
-  ; Reposition sprites for level 3
-  ldx #0
+  ; Reposition sprites for level 3 (Y positions only)
+  ldy #0  ; Sprite number
+  ldx #1  ; Start at Y register ($d001)
 pos_loop3
-  lda sprite_y_pos, x
+  lda sprite_y_pos, y
   clc
   adc #100  ; Offset for multiplex
-  sta VIC_SPRITE_Y, x
-  sta VIC_SPRITE_Y, x
+  sta VIC_SPRITE_X, x  ; Actually writes to Y register
   inx
-  inx
-  cpx #16
+  inx  ; Skip to next Y register
+  iny
+  cpy #NUM_SPRITES
   bne pos_loop3
   
   ; Setup next IRQ
@@ -378,17 +380,18 @@ irq_multiplex4
   lda VIC_RASTER
   sta $d019
   
-  ; Reposition sprites for level 4
-  ldx #0
+  ; Reposition sprites for level 4 (Y positions only)
+  ldy #0  ; Sprite number
+  ldx #1  ; Start at Y register ($d001)
 pos_loop4
-  lda sprite_y_pos, x
+  lda sprite_y_pos, y
   clc
   adc #150  ; Offset for multiplex
-  sta VIC_SPRITE_Y, x
-  sta VIC_SPRITE_Y, x
+  sta VIC_SPRITE_X, x  ; Actually writes to Y register
   inx
-  inx
-  cpx #16
+  inx  ; Skip to next Y register
+  iny
+  cpy #NUM_SPRITES
   bne pos_loop4
   
   ; Return to main IRQ
