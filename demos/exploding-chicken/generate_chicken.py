@@ -171,9 +171,11 @@ def rgb_to_c64_color(rgb):
     return closest_color
 
 def image_to_c64_chars(img):
-    """Convert image to C64 character/color data (simplified for ECM)"""
-    # For simplicity in ECM, we'll use color RAM data
-    # Each 8x8 block maps to one character with one color
+    """
+    Convert image to C64 character codes for ECM display
+    In Enhanced Color Mode, each character position gets a color value (0-15)
+    which is written to screen RAM to display colored blocks
+    """
     colors = []
     
     for char_y in range(HEIGHT):

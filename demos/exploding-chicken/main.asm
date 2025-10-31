@@ -44,10 +44,10 @@ clear_screen:
     sta $d020       ; Border color = black
     
     ; Enable Enhanced Color Mode (ECM)
-    ; Set bit 6 of $d011 for ECM, bit 5 for bitmap mode (we want text mode)
+    ; Set bit 6 of $d011 for ECM, clear bit 5 to use character mode (not bitmap mode)
     lda $d011
     ora #%01000000  ; Enable ECM (bit 6)
-    and #%11011111  ; Disable bitmap mode (bit 5 clear)
+    and #%11011111  ; Clear bit 5 for character mode
     sta $d011
     
     ; Initialize frame counter
@@ -183,43 +183,6 @@ copy_col_loop:
     inx
     cpx #$08        ; 8 rows
     bne copy_row_loop
-    
-    rts
-
-; Update color RAM with animation colors
-; In ECM, colors are determined by bits 6-7 of character code
-; and the foreground color from color RAM
-update_colors:
-    ; Set color RAM to yellow for chicken
-    ; Center position in color RAM: $d800 + $150
-    lda #<($d800 + $150)
-    sta dest_ptr
-    lda #>($d800 + $150)
-    sta dest_ptr+1
-    
-    ; Set 8x8 area to yellow
-    ldx #$00
-color_row_loop:
-    ldy #$00
-color_col_loop:
-    lda #$07        ; Yellow
-    sta (dest_ptr),y
-    iny
-    cpy #$08
-    bne color_col_loop
-    
-    ; Next row
-    lda dest_ptr
-    clc
-    adc #$28        ; 40 chars
-    sta dest_ptr
-    lda dest_ptr+1
-    adc #$00
-    sta dest_ptr+1
-    
-    inx
-    cpx #$08
-    bne color_row_loop
     
     rts
 
