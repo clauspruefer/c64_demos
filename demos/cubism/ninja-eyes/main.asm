@@ -39,6 +39,9 @@ main:
     ; Clear screen
     jsr clear_screen
     
+    ; Draw title
+    jsr draw_title
+    
     ; Setup character set for eyes
     jsr setup_charset
     
@@ -76,6 +79,31 @@ clear_loop:
     rts
 
 ;=============================================================================
+; Draw title text
+;=============================================================================
+draw_title:
+    ; Draw title at row 5, centered
+    ldx #0
+title_loop:
+    lda title_text,x
+    beq title_done
+    sta $0400 + 5*40 + 7,x
+    lda #$0e  ; Light blue
+    sta $d800 + 5*40 + 7,x
+    inx
+    bne title_loop
+title_done:
+    rts
+
+title_text:
+    !text "ninja eyes - morphing pupils"
+    !byte 0
+
+info_text:
+    !text "  inspired by last ninja  "
+    !byte 0
+
+;=============================================================================
 ; Setup character set
 ;=============================================================================
 setup_charset:
@@ -87,6 +115,18 @@ setup_charset:
     
     lda #$08  ; 40 columns
     sta $d016
+    
+    ; Draw info text at bottom
+    ldx #0
+info_loop:
+    lda info_text,x
+    beq info_done
+    sta $0400 + 22*40 + 7,x
+    lda #$0f  ; Light gray
+    sta $d800 + 22*40 + 7,x
+    inx
+    bne info_loop
+info_done:
     
     rts
 
@@ -121,21 +161,8 @@ draw_right_eye:
     
     rts
 
-; Eye character data - represents ninja eyes with pupils
-; 3 rows x 8 columns per eye
-eye_chars:
-    ; Top row
-    !byte $20,$55,$55,$55,$55,$55,$55,$20
-    ; Middle row (with pupil markers)
-    !byte $55,$55,$20,$7e,$7e,$20,$55,$55
-    ; Bottom row
-    !byte $20,$55,$55,$55,$55,$55,$55,$20
-
-eye_colors:
-    ; Colors: white for eye white, dark gray for pupil area
-    !byte $01,$01,$01,$01,$01,$01,$01,$01
-    !byte $01,$01,$0b,$0b,$0b,$0b,$01,$01
-    !byte $01,$01,$01,$01,$01,$01,$01,$01
+; Include generated eye data
+!source "eye-data.i"
 
 ;=============================================================================
 ; Setup raster interrupt
