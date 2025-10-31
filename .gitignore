@@ -14,8 +14,9 @@ __pycache__/
 demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
-tools/alien-animation/test_frames/
-tools/alien-animation/video_frames/
+# Keep alien-animation frames (they are sample outputs to be committed)
+# tools/alien-animation/test_frames/
+# tools/alien-animation/video_frames/
 
 # Generated video files
 tools/alien-animation/alien_animation.mp4
