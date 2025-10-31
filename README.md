@@ -13,6 +13,12 @@ First demo after over 10 years of C64 abscence. It will be a certified
 
 Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 
+## 2. Exploding Chicken
+A comic-style exploding chicken animation using Enhanced Color Mode (ECM) with the Colodore palette.
+Features a 16-frame animation loop of a chicken exploding in hires mode with max 64 characters.
+
+Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/exploding-chicken.
+
 # Useful External Links
 - [C64 Studio IDE](https://www.georg-rottensteiner.de/de/c64.html)
 - [Codebase64](https://codebase64.org/)
@@ -24,3 +30,4 @@ Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 - [Retropixels Online Image Converter](https://www.micheldebree.nl/retropixels/)
 - [FLI Mode+$d011 Explained](https://www.retro-programming.de/programming/nachschlagewerk/vic-ii/vic-ii-grafikmodes-fli/)
 - [Fieser Wolf (C64 Legend) - Useful Tools](https://github.com/fieserWolF/)
+- [Colodore - C64 Color Palette](https://www.colodore.com/)

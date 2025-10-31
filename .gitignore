@@ -13,6 +13,7 @@ __pycache__/
 # Generated PNG animation frames
 demos/floodlights/frames/
 demos/exploding-chicken/frames/
+demos/exploding-chicken/*.gif
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
 
