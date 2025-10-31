@@ -4,11 +4,11 @@ Collection of tools for generating C64 demo content and animations.
 
 ## Tools
 
-### Fly Animation Generator
+### Realistic Fly Animation Generator
 
 Located in: `fly-animation/`
 
-Generates a realistic fly animation inspired by the movie "Mandibules". The fly starts far away and approaches the camera until only its giant compound eyes are visible. Creates 150 frames at 320x200 resolution using the Colodore C64 palette.
+Generates a photorealistic fly animation inspired by the movie "Mandibules". The fly starts far away and approaches the camera until only its giant compound eyes are visible. Creates 150 frames at Full HD resolution (1920x1080) with realistic 3D-style rendering including gradients, lighting effects, and detailed textures.
 
 See [fly-animation/README.md](fly-animation/README.md) for details.
 
