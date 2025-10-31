@@ -1,5 +1,5 @@
-//- OpenGL Morphing 3D Models - 128 Vertex Point Cloud Animation
-//- Five different 3D models that morph into each other every 60 seconds
+//- OpenGL Morphing 3D Models - 64 Vertex Point Cloud Animation
+//- Four different 3D models that morph into each other every 60 seconds
 
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -13,7 +13,7 @@
 using namespace std;
 
 static const int FPS = 60;
-static const int NUM_VERTICES = 128;
+static const int NUM_VERTICES = 64;
 static const int SECONDS_PER_MODEL = 60;
 static const int FRAMES_PER_MODEL = SECONDS_PER_MODEL * FPS;
 static const int MORPH_DURATION = 2 * FPS; // 2 seconds morph transition
@@ -21,7 +21,7 @@ static const int MORPH_DURATION = 2 * FPS; // 2 seconds morph transition
 static int frameCounter = 0;
 static GLint rotateAngle = 0;
 
-//- Model namespace containing all 5 3D models
+//- Model namespace containing all 4 3D models
 namespace Models {
     
     // Model structure
@@ -31,18 +31,17 @@ namespace Models {
     };
     
     vector<Vertex> model1; // Sphere
-    vector<Vertex> model2; // Cube
-    vector<Vertex> model3; // Torus (donut)
-    vector<Vertex> model4; // Double Helix
-    vector<Vertex> model5; // Icosahedron-like star
+    vector<Vertex> model2; // Torus (donut)
+    vector<Vertex> model3; // Double Helix
+    vector<Vertex> model4; // Icosahedron-like star
     
     vector<Vertex> currentModel;
     
-    // Generate sphere model with 128 vertices
+    // Generate sphere model with 64 vertices
     void generateSphere() {
         model1.clear();
         const int rings = 8;
-        const int sectors = 16;
+        const int sectors = 8;
         const float radius = 2.5f;
         
         for (int i = 0; i < rings; i++) {
@@ -72,97 +71,13 @@ namespace Models {
         cout << "Sphere vertices: " << model1.size() << endl;
     }
     
-    // Generate cube model with 128 vertices
-    void generateCube() {
-        model2.clear();
-        const float size = 3.0f;
-        const int pointsPerEdge = 8;
-        const int pointsPerFace = 16;  // Number of points per cube face
-        
-        // Generate points on cube edges and faces
-        for (int i = 0; i < pointsPerEdge; i++) {
-            float t = -size/2 + size * (float)i / (float)(pointsPerEdge - 1);
-            
-            for (int j = 0; j < pointsPerEdge; j++) {
-                float s = -size/2 + size * (float)j / (float)(pointsPerEdge - 1);
-                
-                // Face 1: z = size/2
-                if ((i + j * pointsPerEdge) < pointsPerFace) {
-                    Vertex v;
-                    v.x = t;
-                    v.y = s;
-                    v.z = size/2;
-                    v.r = 1.0f;
-                    v.g = 0.3f + 0.3f * (float)i / pointsPerEdge;
-                    v.b = 0.3f + 0.3f * (float)j / pointsPerEdge;
-                    model2.push_back(v);
-                }
-                
-                // Face 2: z = -size/2
-                if ((i + j * pointsPerEdge) < pointsPerFace) {
-                    Vertex v;
-                    v.x = t;
-                    v.y = s;
-                    v.z = -size/2;
-                    v.r = 0.3f + 0.3f * (float)i / pointsPerEdge;
-                    v.g = 1.0f;
-                    v.b = 0.3f + 0.3f * (float)j / pointsPerEdge;
-                    model2.push_back(v);
-                }
-            }
-        }
-        
-        // Add edge vertices
-        for (int i = 0; i < pointsPerEdge; i++) {
-            float t = -size/2 + size * (float)i / (float)(pointsPerEdge - 1);
-            
-            // Edges along x-axis
-            for (int k = 0; k < 4; k++) {
-                Vertex v;
-                v.x = t;
-                v.y = (k % 2 == 0) ? -size/2 : size/2;
-                v.z = (k < 2) ? -size/2 : size/2;
-                v.r = 0.8f;
-                v.g = 0.8f;
-                v.b = 0.3f;
-                model2.push_back(v);
-                if (model2.size() >= NUM_VERTICES) break;
-            }
-            if (model2.size() >= NUM_VERTICES) break;
-        }
-        
-        // Pad to 128 if needed
-        if (!model2.empty()) {
-            while (model2.size() < NUM_VERTICES) {
-                model2.push_back(model2.back());
-            }
-        } else {
-            // Fallback: create a simple cube if generation failed
-            for (int i = 0; i < NUM_VERTICES; i++) {
-                Vertex v;
-                v.x = ((i % 4) - 1.5f) * 1.5f;
-                v.y = (((i / 4) % 4) - 1.5f) * 1.5f;
-                v.z = (((i / 16) % 4) - 1.5f) * 1.5f;
-                v.r = 0.8f;
-                v.g = 0.8f;
-                v.b = 0.3f;
-                model2.push_back(v);
-            }
-        }
-        
-        // Trim to exactly 128
-        model2.resize(NUM_VERTICES);
-        
-        cout << "Cube vertices: " << model2.size() << endl;
-    }
-    
-    // Generate torus (donut) model with 128 vertices
+    // Generate torus (donut) model with 64 vertices
     void generateTorus() {
-        model3.clear();
+        model2.clear();
         const float majorRadius = 2.0f;
         const float minorRadius = 0.8f;
         const int majorSegments = 16;
-        const int minorSegments = 8;
+        const int minorSegments = 4;
         
         for (int i = 0; i < majorSegments; i++) {
             float theta = 2.0f * M_PI * (float)i / (float)majorSegments;
@@ -184,19 +99,19 @@ namespace Models {
                 v.g = 0.3f + 0.3f * (float)j / minorSegments;
                 v.b = 0.8f;
                 
-                model3.push_back(v);
+                model2.push_back(v);
             }
         }
         
-        cout << "Torus vertices: " << model3.size() << endl;
+        cout << "Torus vertices: " << model2.size() << endl;
     }
     
-    // Generate double helix model with 128 vertices
+    // Generate double helix model with 64 vertices
     void generateDoubleHelix() {
-        model4.clear();
+        model3.clear();
         const float radius = 1.5f;
         const float height = 6.0f;
-        const int pointsPerHelix = 64;
+        const int pointsPerHelix = 32;
         
         // First helix
         for (int i = 0; i < pointsPerHelix; i++) {
@@ -213,7 +128,7 @@ namespace Models {
             v.g = 0.8f + 0.2f * t;
             v.b = 0.9f;
             
-            model4.push_back(v);
+            model3.push_back(v);
         }
         
         // Second helix (offset by 180 degrees)
@@ -231,19 +146,19 @@ namespace Models {
             v.g = 0.9f - 0.2f * t;
             v.b = 0.2f;
             
-            model4.push_back(v);
+            model3.push_back(v);
         }
         
-        cout << "Double Helix vertices: " << model4.size() << endl;
+        cout << "Double Helix vertices: " << model3.size() << endl;
     }
     
-    // Generate icosahedron-like star model with 128 vertices
+    // Generate icosahedron-like star model with 64 vertices
     void generateStar() {
-        model5.clear();
+        model4.clear();
         const float innerRadius = 1.0f;
         const float outerRadius = 3.5f;
         const int numSpikes = 16;
-        const int pointsPerSpike = 8;
+        const int pointsPerSpike = 4;
         
         for (int i = 0; i < numSpikes; i++) {
             // Horizontal angle
@@ -267,17 +182,16 @@ namespace Models {
                 v.g = 0.5f + 0.5f * cos((hue + 0.33f) * 2.0f * M_PI);
                 v.b = 0.5f + 0.5f * cos((hue + 0.67f) * 2.0f * M_PI);
                 
-                model5.push_back(v);
+                model4.push_back(v);
             }
         }
         
-        cout << "Star vertices: " << model5.size() << endl;
+        cout << "Star vertices: " << model4.size() << endl;
     }
     
     // Initialize all models
     void generateAll() {
         generateSphere();
-        generateCube();
         generateTorus();
         generateDoubleHelix();
         generateStar();
@@ -300,7 +214,7 @@ namespace Models {
     
     // Update current model based on time (morphing logic)
     void update(int frame) {
-        int totalFrames = 5 * FRAMES_PER_MODEL;
+        int totalFrames = 4 * FRAMES_PER_MODEL;
         frame = frame % totalFrames;
         
         int modelIndex = frame / FRAMES_PER_MODEL;
@@ -316,8 +230,7 @@ namespace Models {
             case 0: fromModel = &model1; toModel = &model2; break;
             case 1: fromModel = &model2; toModel = &model3; break;
             case 2: fromModel = &model3; toModel = &model4; break;
-            case 3: fromModel = &model4; toModel = &model5; break;
-            case 4: fromModel = &model5; toModel = &model1; break;
+            case 3: fromModel = &model4; toModel = &model1; break;
             default: fromModel = &model1; toModel = &model1; break;
         }
         
@@ -424,13 +337,12 @@ void init() {
     cout << "Total vertices per model: " << NUM_VERTICES << endl;
     cout << "Display time per model: " << SECONDS_PER_MODEL << " seconds" << endl;
     cout << "Morph transition time: " << (MORPH_DURATION / FPS) << " seconds" << endl;
-    cout << "Total animation cycle: " << (5 * SECONDS_PER_MODEL) << " seconds" << endl;
+    cout << "Total animation cycle: " << (4 * SECONDS_PER_MODEL) << " seconds" << endl;
     cout << "\nModel sequence:" << endl;
     cout << "  1. Sphere (blue)" << endl;
-    cout << "  2. Cube (red/green)" << endl;
-    cout << "  3. Torus/Donut (pink/purple)" << endl;
-    cout << "  4. Double Helix (cyan/yellow)" << endl;
-    cout << "  5. Star (rainbow)" << endl;
+    cout << "  2. Torus/Donut (pink/purple)" << endl;
+    cout << "  3. Double Helix (cyan/yellow)" << endl;
+    cout << "  4. Star (rainbow)" << endl;
     cout << "================================\n" << endl;
 }
 
