@@ -15,7 +15,8 @@ def generate_sine_wave(amplitude=80, frequency=1, num_points=256, offset=120):
         angle = (i / num_points) * (2 * math.pi * frequency)
         value = int(amplitude * math.sin(angle) + offset)
         
-        # Clamp to valid C64 sprite X position range (0-255 for low byte)
+        # Clamp to valid C64 sprite X position range (0-255)
+        # Note: X positions > 255 require setting the high bit in $D010
         value = max(0, min(255, value))
         sine_data.append(value)
     

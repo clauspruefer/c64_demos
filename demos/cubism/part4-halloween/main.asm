@@ -200,7 +200,8 @@ rasterbar_loop
   cmp #200  ; stop at raster line 200
   bcs rasterbar_done
 
-  ; wait for raster line
+  ; wait for raster line (simple busy-wait, safe for demo use)
+  ; current_raster value is already in accumulator from above
 raster_wait
   cmp $d012
   bne raster_wait
@@ -213,9 +214,6 @@ raster_wait
 
   ; increment counters
   inc raster_index
-  lda raster_index
-  and #$ff  ; wrap around color table
-  sta raster_index
 
   inc current_raster
   inc current_raster  ; skip every other line for speed
@@ -230,6 +228,8 @@ rasterbar_done
 
 ; ============================================================================
 ; Animate Pumpkin Sprites with Sine Movement
+; Using self-modifying code (classic C64 demo technique) to update sprite
+; positions by incrementing the index into the sine wave lookup table
 ; ============================================================================
 
 ; pumpkin 1 - horizontal sine wave
