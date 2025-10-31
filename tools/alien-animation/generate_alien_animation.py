@@ -39,7 +39,7 @@ class AlienAnimation:
         
         # Main saucer body (ellipse)
         draw.ellipse([x - w, y - h//2, x + w, y + h//2], 
-                     fill=(180, 180, 200), outline=(100, 100, 120), width=3)
+                     fill=(180, 180, 200, 255), outline=(100, 100, 120, 255), width=3)
         
         # Dome (semi-transparent)
         dome_h = int(40 * scale)
@@ -51,7 +51,7 @@ class AlienAnimation:
             light_x = x + i * w // 3
             light_y = y + h//4
             draw.ellipse([light_x - 10, light_y - 5, light_x + 10, light_y + 5],
-                        fill=(255, 255, 0))
+                        fill=(255, 255, 0, 255))
         
         return (x, y - h//2 - dome_h//2)  # Return center of dome for alien position
     
