@@ -14,6 +14,8 @@ __pycache__/
 demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
+tools/frankenstein-animation/frames/
+tools/frankenstein-animation/frankenstein_frame_*.png
 
 # Build artifacts
 *.o
