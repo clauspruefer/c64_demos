@@ -13,6 +13,11 @@ First demo after over 10 years of C64 abscence. It will be a certified
 
 Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 
+## 2. Rope Sine Wave
+A sine wave animation featuring 24 vertical ropes moving in a smooth wave pattern. Uses character-mode graphics with raster interrupts for smooth 50/60Hz animation.
+
+Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/rope-sine.
+
 # Useful External Links
 - [C64 Studio IDE](https://www.georg-rottensteiner.de/de/c64.html)
 - [Codebase64](https://codebase64.org/)

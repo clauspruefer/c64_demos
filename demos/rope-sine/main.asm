@@ -98,28 +98,35 @@ clr_screen
   
 draw_ropes
   ; Calculate index into sine data: frame_counter * 24 + rope_number
-  ; For simplicity, we'll use modulo addressing
+  ; 24 = 16 + 8, so we multiply by 16 and add by 8
   
-  ; Get base offset for current frame (y * 24)
-  ; We'll use a lookup approach for this frame
   tya
   and #$FF  ; Ensure it wraps at 256
   sta temp_frame
   
-  ; Calculate offset: temp_frame * 24 + x
+  ; Calculate offset: temp_frame * 24
+  ; temp_frame * 16
   lda temp_frame
   asl  ; *2
-  sta temp_a
   asl  ; *4
   asl  ; *8
-  adc temp_a  ; *10
-  adc temp_a  ; *12
-  asl  ; *24
+  asl  ; *16
   sta temp_offset
   
-  txa
+  ; temp_frame * 8
+  lda temp_frame
+  asl  ; *2
+  asl  ; *4
+  asl  ; *8
+  
+  ; Add them together for *24
   clc
   adc temp_offset
+  
+  ; Add rope index (x contains rope number 0-23)
+  stx temp_a
+  clc
+  adc temp_a
   tay
   
   ; Get Y position from sine data
