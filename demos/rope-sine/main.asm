@@ -101,7 +101,6 @@ draw_ropes
   ; 24 = 16 + 8, so we multiply by 16 and add by 8
   
   tya
-  and #$FF  ; Ensure it wraps at 256
   sta temp_frame
   
   ; Calculate offset: temp_frame * 24

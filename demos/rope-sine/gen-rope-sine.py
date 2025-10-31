@@ -24,7 +24,8 @@ def generate_sine_data():
             y_positions = []
             for rope in range(NUM_ROPES):
                 # Calculate phase offset for each rope to create wave effect
-                phase = (frame + rope * (FRAMES / NUM_ROPES)) * (2 * math.pi / FRAMES)
+                # Each rope is offset by 1/24th of a full cycle
+                phase = (frame + rope * (FRAMES // NUM_ROPES)) * (2 * math.pi / FRAMES)
                 # Calculate Y position using sine wave
                 y = int(CENTER_Y + AMPLITUDE * math.sin(phase))
                 # Clamp to valid range
