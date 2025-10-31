@@ -2,10 +2,11 @@
 //- Five different 3D models that morph into each other every 60 seconds
 
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <GL/glut.h>
 #include <GL/gl.h>
 
-#include <cmath>
 #include <iostream>
 #include <vector>
 
@@ -130,8 +131,22 @@ namespace Models {
         }
         
         // Pad to 128 if needed
-        while (model2.size() < NUM_VERTICES) {
-            model2.push_back(model2[model2.size() - 1]);
+        if (!model2.empty()) {
+            while (model2.size() < NUM_VERTICES) {
+                model2.push_back(model2.back());
+            }
+        } else {
+            // Fallback: create a simple cube if generation failed
+            for (int i = 0; i < NUM_VERTICES; i++) {
+                Vertex v;
+                v.x = ((i % 4) - 1.5f) * 1.5f;
+                v.y = (((i / 4) % 4) - 1.5f) * 1.5f;
+                v.z = (((i / 16) % 4) - 1.5f) * 1.5f;
+                v.r = 0.8f;
+                v.g = 0.8f;
+                v.b = 0.3f;
+                model2.push_back(v);
+            }
         }
         
         // Trim to exactly 128
