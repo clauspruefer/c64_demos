@@ -77,6 +77,7 @@ namespace Models {
         model2.clear();
         const float size = 3.0f;
         const int pointsPerEdge = 8;
+        const int pointsPerFace = 16;  // Number of points per cube face
         
         // Generate points on cube edges and faces
         for (int i = 0; i < pointsPerEdge; i++) {
@@ -86,7 +87,7 @@ namespace Models {
                 float s = -size/2 + size * (float)j / (float)(pointsPerEdge - 1);
                 
                 // Face 1: z = size/2
-                if ((i + j * pointsPerEdge) < 16) {
+                if ((i + j * pointsPerEdge) < pointsPerFace) {
                     Vertex v;
                     v.x = t;
                     v.y = s;
@@ -98,7 +99,7 @@ namespace Models {
                 }
                 
                 // Face 2: z = -size/2
-                if ((i + j * pointsPerEdge) < 16) {
+                if ((i + j * pointsPerEdge) < pointsPerFace) {
                     Vertex v;
                     v.x = t;
                     v.y = s;
