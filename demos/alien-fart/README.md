@@ -10,6 +10,22 @@ The alien wants to threaten the man, so it flies down by the man's face and fart
 
 ## Animation Sequence
 
+```
+State 0 (60 frames):        State 1 (120 frames):
+     👽 🍩                        👽 🍩
+     🛸                           🛸
+                                 
+                                  🚶 🍔 →
+
+State 2 (30 frames):       State 3 (60 frames):
+                                    🍩
+        👽 🍩                       🛸
+        🛸                          👽
+       💨                   
+      🚶  🍔→                🚶         🍔 → → →
+                                      (flies 20m!)
+```
+
 1. **State 0** (60 frames): Alien eating donuts in the flying saucer
 2. **State 1** (120 frames): Man walking from left to right eating a hamburger
 3. **State 2** (30 frames): Alien flies down toward the man's face and farts (border flashes green for fart effect)
@@ -29,10 +45,24 @@ The alien wants to threaten the man, so it flies down by the man's face and fart
 
 ## Building
 
-To build this demo, you need the ACME cross-assembler:
+To build this demo, you need the ACME cross-assembler.
 
+### Quick Build
+```bash
+./build.sh
+```
+
+### Manual Build
 ```bash
 acme -f cbm -o alien-fart.prg main.asm
+```
+
+### Installing ACME (if needed)
+```bash
+# On Debian/Ubuntu:
+sudo apt-get install acme
+
+# Or download from: http://sourceforge.net/p/acme-crossass/
 ```
 
 ## Running
