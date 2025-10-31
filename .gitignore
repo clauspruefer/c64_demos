@@ -27,6 +27,9 @@ demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
 
+# Morphing spheres executable
+tools/sphere-morphing/morphing-spheres
+
 # Editor backup files
 *~
 *.swp
