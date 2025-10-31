@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <vector>
-#include <fstream>
 
 using namespace std;
 
@@ -19,13 +18,8 @@ static const int SECONDS_PER_MODEL = 60;
 static const int FRAMES_PER_MODEL = SECONDS_PER_MODEL * FPS;
 static const int MORPH_DURATION = 2 * FPS; // 2 seconds morph transition
 
-static const int EXPORT_INTERVAL = 30; // Export every 30 frames
-static const int EXPORT_COUNT = 200;    // Export 200 times
-
 static int frameCounter = 0;
 static GLint rotateAngle = 0;
-static int exportCounter = 0;
-static ofstream coordFile;
 
 //- Model namespace containing all 4 3D models
 namespace Models {
@@ -276,54 +270,6 @@ namespace Models {
     }
 }
 
-// Export projected coordinates to file
-void exportCoordinates() {
-    if (!coordFile.is_open() || exportCounter >= EXPORT_COUNT) {
-        return;
-    }
-    
-    // Get the current matrices and viewport
-    GLdouble modelview[16];
-    GLdouble projection[16];
-    GLint viewport[4];
-    
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-    glGetDoublev(GL_PROJECTION_MATRIX, projection);
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    
-    // Write frame number
-    coordFile << "Frame " << frameCounter << ":" << endl;
-    
-    // Project all vertices and write their screen coordinates
-    for (size_t i = 0; i < Models::currentModel.size(); i++) {
-        const Models::Vertex& v = Models::currentModel[i];
-        
-        GLdouble winX, winY, winZ;
-        gluProject(
-            (GLdouble)v.x,
-            (GLdouble)v.y,
-            (GLdouble)v.z,
-            modelview,
-            projection,
-            viewport,
-            &winX,
-            &winY,
-            &winZ
-        );
-        
-        // Write vertex index and x, y coordinates
-        coordFile << "  Vertex " << i << ": x=" << winX << ", y=" << winY << endl;
-    }
-    
-    coordFile << endl;
-    exportCounter++;
-    
-    if (exportCounter >= EXPORT_COUNT) {
-        cout << "Coordinate export complete: " << EXPORT_COUNT << " snapshots saved." << endl;
-        coordFile.close();
-    }
-}
-
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -335,11 +281,6 @@ void display() {
     // Update and draw current model
     Models::update(frameCounter);
     Models::draw();
-    
-    // Export coordinates every EXPORT_INTERVAL frames
-    if (frameCounter % EXPORT_INTERVAL == 0 && exportCounter < EXPORT_COUNT) {
-        exportCoordinates();
-    }
     
     rotateAngle += 1;
     frameCounter++;
@@ -391,16 +332,6 @@ void init() {
     
     // Generate all models
     Models::generateAll();
-    
-    // Open coordinate export file
-    coordFile.open("coordinates.txt");
-    if (coordFile.is_open()) {
-        cout << "Coordinate export file opened: coordinates.txt" << endl;
-        cout << "Will export coordinates every " << EXPORT_INTERVAL << " frames, " 
-             << EXPORT_COUNT << " times total." << endl;
-    } else {
-        cout << "Warning: Could not open coordinate export file." << endl;
-    }
     
     cout << "\n=== 3D Morphing Models Demo ===" << endl;
     cout << "Total vertices per model: " << NUM_VERTICES << endl;

@@ -18,11 +18,6 @@ A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 
 
 - **Color Gradients**: Each model has unique color gradients to distinguish them
 
-- **Coordinate Export**: Automatically exports projected screen coordinates (x, y) for all vertices using `gluProject`
-  - Exports every 30 frames
-  - Saves 200 snapshots total (6000 frames)
-  - Output saved to `coordinates.txt`
-
 ## Building
 
 ### Requirements
@@ -83,5 +78,3 @@ During the last 2 seconds of each 60-second period, the current model smoothly m
 - Depth testing enabled for proper 3D rendering
 - All models centered at origin (0, 0, 0)
 - Camera orbits at distance of 10 units from center
-- Coordinate export uses `gluProject` to convert 3D world coordinates to 2D screen coordinates
-- Export file format: Each frame lists all 64 vertices with their projected x,y screen positions
