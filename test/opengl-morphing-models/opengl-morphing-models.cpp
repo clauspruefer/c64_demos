@@ -1,5 +1,5 @@
 //- OpenGL Morphing 3D Models - 64 Vertex Point Cloud Animation
-//- Four different 3D models that morph into each other every 60 seconds
+//- Two different 3D models that morph into each other
 
 #include <stdlib.h>
 #define _USE_MATH_DEFINES
@@ -14,14 +14,16 @@ using namespace std;
 
 static const int FPS = 60;
 static const int NUM_VERTICES = 64;
-static const int SECONDS_PER_MODEL = 60;
-static const int FRAMES_PER_MODEL = SECONDS_PER_MODEL * FPS;
+static const int FRAMES_PER_LOOP = 640;  // Each animation loops in 640 frames
+static const int LOOPS_BEFORE_MORPH = 2;  // Loop twice before morphing
+static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 1280 frames
 static const int MORPH_DURATION = 2 * FPS; // 2 seconds morph transition
+static const int EXPORT_INTERVAL = 10;  // Export every 10 frames (6 times per second)
 
 static int frameCounter = 0;
 static GLint rotateAngle = 0;
 
-//- Model namespace containing all 4 3D models
+//- Model namespace containing 2 3D models
 namespace Models {
     
     // Model structure
@@ -30,50 +32,14 @@ namespace Models {
         float r, g, b;  // Color
     };
     
-    vector<Vertex> model1; // Sphere
-    vector<Vertex> model2; // Torus (donut)
-    vector<Vertex> model3; // Double Helix
-    vector<Vertex> model4; // Icosahedron-like star
+    vector<Vertex> model1; // Torus (donut)
+    vector<Vertex> model2; // Star
     
     vector<Vertex> currentModel;
     
-    // Generate sphere model with 64 vertices
-    void generateSphere() {
-        model1.clear();
-        const int rings = 8;
-        const int sectors = 8;
-        const float radius = 2.5f;
-        
-        for (int i = 0; i < rings; i++) {
-            float theta = M_PI * (float)i / (float)(rings - 1);
-            float sinTheta = sin(theta);
-            float cosTheta = cos(theta);
-            
-            for (int j = 0; j < sectors; j++) {
-                float phi = 2.0f * M_PI * (float)j / (float)sectors;
-                float sinPhi = sin(phi);
-                float cosPhi = cos(phi);
-                
-                Vertex v;
-                v.x = radius * sinTheta * cosPhi;
-                v.y = radius * sinTheta * sinPhi;
-                v.z = radius * cosTheta;
-                
-                // Blue gradient
-                v.r = 0.2f + 0.3f * (float)i / rings;
-                v.g = 0.4f + 0.4f * (float)i / rings;
-                v.b = 0.8f + 0.2f * (float)j / sectors;
-                
-                model1.push_back(v);
-            }
-        }
-        
-        cout << "Sphere vertices: " << model1.size() << endl;
-    }
-    
     // Generate torus (donut) model with 64 vertices
     void generateTorus() {
-        model2.clear();
+        model1.clear();
         const float majorRadius = 2.0f;
         const float minorRadius = 0.8f;
         const int majorSegments = 16;
@@ -99,62 +65,16 @@ namespace Models {
                 v.g = 0.3f + 0.3f * (float)j / minorSegments;
                 v.b = 0.8f;
                 
-                model2.push_back(v);
+                model1.push_back(v);
             }
         }
         
-        cout << "Torus vertices: " << model2.size() << endl;
-    }
-    
-    // Generate double helix model with 64 vertices
-    void generateDoubleHelix() {
-        model3.clear();
-        const float radius = 1.5f;
-        const float height = 6.0f;
-        const int pointsPerHelix = 32;
-        
-        // First helix
-        for (int i = 0; i < pointsPerHelix; i++) {
-            float t = (float)i / (float)(pointsPerHelix - 1);
-            float angle = t * 4.0f * M_PI;
-            
-            Vertex v;
-            v.x = radius * cos(angle);
-            v.y = radius * sin(angle);
-            v.z = -height/2 + height * t;
-            
-            // Cyan gradient
-            v.r = 0.2f;
-            v.g = 0.8f + 0.2f * t;
-            v.b = 0.9f;
-            
-            model3.push_back(v);
-        }
-        
-        // Second helix (offset by 180 degrees)
-        for (int i = 0; i < pointsPerHelix; i++) {
-            float t = (float)i / (float)(pointsPerHelix - 1);
-            float angle = t * 4.0f * M_PI + M_PI;
-            
-            Vertex v;
-            v.x = radius * cos(angle);
-            v.y = radius * sin(angle);
-            v.z = -height/2 + height * t;
-            
-            // Yellow gradient
-            v.r = 0.9f;
-            v.g = 0.9f - 0.2f * t;
-            v.b = 0.2f;
-            
-            model3.push_back(v);
-        }
-        
-        cout << "Double Helix vertices: " << model3.size() << endl;
+        cout << "Torus vertices: " << model1.size() << endl;
     }
     
     // Generate icosahedron-like star model with 64 vertices
     void generateStar() {
-        model4.clear();
+        model2.clear();
         const float innerRadius = 1.0f;
         const float outerRadius = 3.5f;
         const int numSpikes = 16;
@@ -182,18 +102,16 @@ namespace Models {
                 v.g = 0.5f + 0.5f * cos((hue + 0.33f) * 2.0f * M_PI);
                 v.b = 0.5f + 0.5f * cos((hue + 0.67f) * 2.0f * M_PI);
                 
-                model4.push_back(v);
+                model2.push_back(v);
             }
         }
         
-        cout << "Star vertices: " << model4.size() << endl;
+        cout << "Star vertices: " << model2.size() << endl;
     }
     
     // Initialize all models
     void generateAll() {
-        generateSphere();
         generateTorus();
-        generateDoubleHelix();
         generateStar();
         
         // Start with first model
@@ -214,7 +132,7 @@ namespace Models {
     
     // Update current model based on time (morphing logic)
     void update(int frame) {
-        int totalFrames = 4 * FRAMES_PER_MODEL;
+        int totalFrames = 2 * FRAMES_PER_MODEL;  // 2 models total
         frame = frame % totalFrames;
         
         int modelIndex = frame / FRAMES_PER_MODEL;
@@ -225,12 +143,10 @@ namespace Models {
         const vector<Vertex>* toModel;
         float morphProgress = 0.0f;
         
-        // Select models based on current time
+        // Select models based on current time (only 2 models now)
         switch (modelIndex) {
             case 0: fromModel = &model1; toModel = &model2; break;
-            case 1: fromModel = &model2; toModel = &model3; break;
-            case 2: fromModel = &model3; toModel = &model4; break;
-            case 3: fromModel = &model4; toModel = &model1; break;
+            case 1: fromModel = &model2; toModel = &model1; break;
             default: fromModel = &model1; toModel = &model1; break;
         }
         
@@ -251,8 +167,12 @@ namespace Models {
         
         // Debug output every 60 frames (once per second)
         if (frame % 60 == 0) {
+            int loopNum = (frameInModel / FRAMES_PER_LOOP) + 1;
+            int frameInLoop = frameInModel % FRAMES_PER_LOOP;
             cout << "Frame: " << frame 
                  << " | Model: " << (modelIndex + 1) 
+                 << " | Loop: " << loopNum << "/2"
+                 << " | Frame in loop: " << frameInLoop
                  << " | Morph: " << (int)(morphProgress * 100) << "%" << endl;
         }
     }
@@ -281,6 +201,38 @@ void display() {
     // Update and draw current model
     Models::update(frameCounter);
     Models::draw();
+    
+    // Export coordinates every 10 frames using gluProject
+    if (frameCounter % EXPORT_INTERVAL == 0) {
+        // Get the current matrices and viewport
+        GLdouble modelview[16];
+        GLdouble projection[16];
+        GLint viewport[4];
+        
+        glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+        glGetDoublev(GL_PROJECTION_MATRIX, projection);
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        
+        GLdouble projectedCoords[NUM_VERTICES][3];
+        
+        // Project all vertices to window coordinates
+        for (int i = 0; i < NUM_VERTICES; i++) {
+            gluProject(
+                (GLdouble)Models::currentModel[i].x,
+                (GLdouble)Models::currentModel[i].y,
+                (GLdouble)Models::currentModel[i].z,
+                modelview,
+                projection,
+                viewport,
+                &projectedCoords[i][0],
+                &projectedCoords[i][1],
+                &projectedCoords[i][2]
+            );
+            cout << "Vertex " << i << " -> Window coords: (" 
+                 << projectedCoords[i][0] << ", " 
+                 << projectedCoords[i][1] << ")" << endl;
+        }
+    }
     
     rotateAngle += 1;
     frameCounter++;
@@ -335,14 +287,15 @@ void init() {
     
     cout << "\n=== 3D Morphing Models Demo ===" << endl;
     cout << "Total vertices per model: " << NUM_VERTICES << endl;
-    cout << "Display time per model: " << SECONDS_PER_MODEL << " seconds" << endl;
+    cout << "Frames per loop: " << FRAMES_PER_LOOP << " (" << (FRAMES_PER_LOOP / FPS) << " seconds)" << endl;
+    cout << "Loops before morph: " << LOOPS_BEFORE_MORPH << endl;
+    cout << "Display time per model: " << (FRAMES_PER_MODEL / FPS) << " seconds" << endl;
     cout << "Morph transition time: " << (MORPH_DURATION / FPS) << " seconds" << endl;
-    cout << "Total animation cycle: " << (4 * SECONDS_PER_MODEL) << " seconds" << endl;
+    cout << "Total animation cycle: " << (2 * FRAMES_PER_MODEL / FPS) << " seconds" << endl;
+    cout << "Coordinate export interval: every " << EXPORT_INTERVAL << " frames (" << (FPS / EXPORT_INTERVAL) << " times/sec)" << endl;
     cout << "\nModel sequence:" << endl;
-    cout << "  1. Sphere (blue)" << endl;
-    cout << "  2. Torus/Donut (pink/purple)" << endl;
-    cout << "  3. Double Helix (cyan/yellow)" << endl;
-    cout << "  4. Star (rainbow)" << endl;
+    cout << "  1. Torus/Donut (pink/purple)" << endl;
+    cout << "  2. Star (rainbow)" << endl;
     cout << "================================\n" << endl;
 }
 
