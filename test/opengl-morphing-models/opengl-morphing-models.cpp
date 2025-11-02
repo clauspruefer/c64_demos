@@ -9,19 +9,22 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
-static const int FPS = 60;
+static const int FPS = 10;  // 10 frames per second
 static const int NUM_VERTICES = 64;
-static const int FRAMES_PER_LOOP = 640;  // Each animation loops in 640 frames
-static const int LOOPS_BEFORE_MORPH = 2;  // Loop twice before morphing
-static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 1280 frames
-static const int MORPH_DURATION = 2 * FPS; // 2 seconds morph transition
-static const int EXPORT_INTERVAL = 10;  // Export every 10 frames (6 times per second)
+static const int FRAMES_PER_LOOP = 180;  // Each animation loops in 180 frames
+static const int LOOPS_BEFORE_MORPH = 3;  // Loop 3 times before morphing
+static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 540 frames
+static const int MORPH_DURATION = 180;  // 180 frames morph transition
+static const int EXPORT_INTERVAL = 1;  // Export every frame for PNG sequence
 
 static int frameCounter = 0;
-static GLint rotateAngle = 0;
+static int globalFrameCounter = 0;  // For PNG export numbering
 
 //- Model namespace containing 2 3D models
 namespace Models {
@@ -190,19 +193,70 @@ namespace Models {
     }
 }
 
+// Save current frame as PNG
+void saveFrameAsPNG() {
+    int width = 800;
+    int height = 600;
+    
+    // Allocate memory for pixel data
+    unsigned char* pixels = new unsigned char[width * height * 3];
+    
+    // Read pixels from framebuffer
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+    
+    // Create filename
+    stringstream ss;
+    ss << "frame_" << setfill('0') << setw(6) << globalFrameCounter << ".ppm";
+    string filename = ss.str();
+    
+    // Save as PPM (simple format that can be converted to PNG)
+    ofstream file(filename, ios::binary);
+    file << "P6\n" << width << " " << height << "\n255\n";
+    
+    // Flip vertically (OpenGL's origin is bottom-left)
+    for (int y = height - 1; y >= 0; y--) {
+        file.write((char*)(pixels + y * width * 3), width * 3);
+    }
+    
+    file.close();
+    delete[] pixels;
+    
+    cout << "Saved " << filename << " (frame " << globalFrameCounter << ")" << endl;
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glPushMatrix();
     
-    // Rotate the model
-    glRotatef(rotateAngle, 0.5, 0.8, 0.3);
+    // Calculate rotation angle based on frame number within loop
+    // This makes the rotation independent from morphing
+    int totalFrames = 2 * FRAMES_PER_MODEL;  // 2 models total
+    int currentFrame = frameCounter % totalFrames;
+    int frameInModel = currentFrame % FRAMES_PER_MODEL;
+    
+    // Determine if we're in morph phase or loop phase
+    bool inMorphPhase = frameInModel >= FRAMES_PER_MODEL - MORPH_DURATION;
+    
+    float rotationAngle;
+    if (inMorphPhase) {
+        // During morph, continue rotation from last loop
+        int morphFrame = frameInModel - (FRAMES_PER_MODEL - MORPH_DURATION);
+        rotationAngle = 360.0f + (360.0f * morphFrame / (float)MORPH_DURATION);
+    } else {
+        // During loop phase, rotate based on frame within loop
+        int loopFrame = frameInModel % FRAMES_PER_LOOP;
+        rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
+    }
+    
+    // Rotate the model around Y axis
+    glRotatef(rotationAngle, 0.0, 1.0, 0.0);
     
     // Update and draw current model
     Models::update(frameCounter);
     Models::draw();
     
-    // Export coordinates every 10 frames using gluProject
+    // Export coordinates every frame using gluProject
     if (frameCounter % EXPORT_INTERVAL == 0) {
         // Get the current matrices and viewport
         GLdouble modelview[16];
@@ -234,28 +288,26 @@ void display() {
         }
     }
     
-    rotateAngle += 1;
-    frameCounter++;
-    
     glPopMatrix();
     
     glutSwapBuffers();
+    
+    // Save frame as PNG for video export
+    saveFrameAsPNG();
+    
+    frameCounter++;
+    globalFrameCounter++;
 }
 
 void timer(int v) {
-    static GLfloat u = 0.0;
-    u += 0.01;
-    
     glLoadIdentity();
     
-    // Camera orbits around the models
+    // Fixed camera position (no orbiting/zooming)
     float camDist = 10.0f;
     gluLookAt(
-        camDist * cos(u), 
-        camDist * sin(u * 0.5f) * 0.5f, 
-        camDist * sin(u) * 0.5f + 5.0f,
-        0.0, 0.0, 0.0,
-        0, 1, 0
+        0.0, 0.0, camDist,  // Camera position - fixed on Z axis
+        0.0, 0.0, 0.0,      // Look at origin
+        0, 1, 0             // Up vector
     );
     
     glutPostRedisplay();
@@ -286,16 +338,21 @@ void init() {
     Models::generateAll();
     
     cout << "\n=== 3D Morphing Models Demo ===" << endl;
+    cout << "FPS: " << FPS << endl;
     cout << "Total vertices per model: " << NUM_VERTICES << endl;
     cout << "Frames per loop: " << FRAMES_PER_LOOP << " (" << (FRAMES_PER_LOOP / FPS) << " seconds)" << endl;
     cout << "Loops before morph: " << LOOPS_BEFORE_MORPH << endl;
     cout << "Display time per model: " << (FRAMES_PER_MODEL / FPS) << " seconds" << endl;
-    cout << "Morph transition time: " << (MORPH_DURATION / FPS) << " seconds" << endl;
-    cout << "Total animation cycle: " << (2 * FRAMES_PER_MODEL / FPS) << " seconds" << endl;
-    cout << "Coordinate export interval: every " << EXPORT_INTERVAL << " frames (" << (FPS / EXPORT_INTERVAL) << " times/sec)" << endl;
+    cout << "Morph transition duration: " << MORPH_DURATION << " frames (" << (MORPH_DURATION / FPS) << " seconds)" << endl;
+    cout << "Total animation cycle: " << (2 * (FRAMES_PER_MODEL + MORPH_DURATION) / FPS) << " seconds" << endl;
+    cout << "Total frames for complete loop: " << (2 * (FRAMES_PER_MODEL + MORPH_DURATION)) << " frames" << endl;
+    cout << "\nPNG Export: Saving every frame as PPM (convert to PNG with ImageMagick)" << endl;
+    cout << "Camera: Fixed position (no zooming/orbiting)" << endl;
     cout << "\nModel sequence:" << endl;
-    cout << "  1. Torus/Donut (pink/purple)" << endl;
-    cout << "  2. Star (rainbow)" << endl;
+    cout << "  1. Torus/Donut (pink/purple) - loops 3 times" << endl;
+    cout << "  2. Torus -> Star morph (180 frames)" << endl;
+    cout << "  3. Star (rainbow) - loops 3 times" << endl;
+    cout << "  4. Star -> Torus morph (180 frames)" << endl;
     cout << "================================\n" << endl;
 }
 

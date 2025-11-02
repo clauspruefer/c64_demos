@@ -1,6 +1,6 @@
 # OpenGL Morphing 3D Models Demo
 
-A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 vertices per model. The demo features 2 different 3D models that smoothly morph into each other.
+A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 vertices per model. The demo features 2 different 3D models that smoothly morph into each other with exportable frame sequences for video production.
 
 ## Features
 
@@ -8,17 +8,21 @@ A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 
   1. **Torus** - Pink/purple donut shape
   2. **Star** - Rainbow-colored spiky star shape
 
-- **Looping Animation**: Each model's animation loops in 640 frames (10.67 seconds at 60 FPS) and plays twice before morphing to the next model
+- **Looping Animation**: Each model's animation loops in 180 frames (18 seconds at 10 FPS) and plays 3 times before morphing to the next model
 
-- **Smooth Morphing**: After 2 loops, the model smoothly morphs into the next model over a 2-second transition period
+- **Smooth Morphing**: After 3 loops, the model smoothly morphs into the next model over 180 frames (18 seconds)
 
 - **GL_POINTS Rendering**: All models are rendered using OpenGL point primitives (pixel-based mesh)
 
-- **Coordinate Export**: Exports projected screen coordinates (x, y) every 10 frames using `gluProject`
-  - 6 coordinate snapshots per second at 60 FPS
+- **Frame Export**: Exports every frame as PPM image for video production
+  - 180 frames per loop × 3 loops = 540 frames per model
+  - 180 frames for morph transition
+  - Total: 1440 frames for complete animation cycle (torus loops → morph → star loops → morph → repeat)
+
+- **Coordinate Export**: Exports projected screen coordinates (x, y) every frame using `gluProject`
   - Output printed to console in real-time
 
-- **Dynamic Camera**: Camera orbits around the models for better viewing
+- **Fixed Camera**: Camera at fixed position (no zooming or orbiting)
 
 - **Color Gradients**: Each model has unique color gradients to distinguish them
 
@@ -54,22 +58,55 @@ Or directly:
 ## Technical Details
 
 - **Total Vertices**: 64 per model
-- **Frame Rate**: 60 FPS
-- **Frames per Loop**: 640 frames (10.67 seconds)
-- **Loops Before Morph**: 2 (total 21.33 seconds per model)
-- **Morph Duration**: 2 seconds (smooth transition using smoothstep interpolation)
-- **Total Animation Cycle**: ~43 seconds (2 models × 21.33 seconds each)
+- **Frame Rate**: 10 FPS
+- **Frames per Loop**: 180 frames (18 seconds)
+- **Loops Before Morph**: 3 (total 54 seconds per model)
+- **Morph Duration**: 180 frames (18 seconds)
+- **Total Animation Cycle**: 144 seconds (2 minutes 24 seconds)
+  - Model 1: 540 frames (54 seconds)
+  - Morph 1→2: 180 frames (18 seconds)
+  - Model 2: 540 frames (54 seconds)
+  - Morph 2→1: 180 frames (18 seconds)
+  - Total: 1440 frames
 - **Rendering Mode**: GL_POINTS with point size of 5.0
-- **Coordinate Export**: Every 10 frames (6 exports per second)
+- **Frame Export**: Every frame saved as PPM (convert to PNG with ImageMagick)
+- **Camera**: Fixed at (0, 0, 10) looking at origin
 
 ## Animation Sequence
 
 The animation cycles through the models in this order:
-1. Torus (loops 2×640 frames) → Star (2 second morph)
-2. Star (loops 2×640 frames) → Torus (2 second morph)
+1. Torus (loops 3×180 frames = 540 frames) → Morph to Star (180 frames)
+2. Star (loops 3×180 frames = 540 frames) → Morph to Torus (180 frames)
 ... and repeats
 
-Each model displays its looping animation twice (2 × 640 frames = 1280 frames = 21.33 seconds), then smoothly morphs into the next model during the last 2 seconds.
+Each model displays its looping animation three times (3 × 180 frames = 540 frames = 54 seconds), then smoothly morphs into the next model during 180 frames (18 seconds).
+
+The rotation animation is separate from the morphing animation - objects rotate 360° per loop (180 frames), making each loop seamless and exportable as a loopable video segment.
+
+## Video Export
+
+To create a video from the exported frames:
+
+1. Run the program to generate PPM frames:
+```bash
+./opengl-morphing-models
+```
+
+2. Convert PPM to PNG (optional, for smaller file sizes):
+```bash
+for f in frame_*.ppm; do convert "$f" "${f%.ppm}.png"; done
+```
+
+3. Create MP4 video with ffmpeg:
+```bash
+# At 10 FPS (original speed)
+ffmpeg -framerate 10 -i frame_%06d.png -c:v libx264 -pix_fmt yuv420p output.mp4
+
+# Or at 30 FPS (3x speed)
+ffmpeg -framerate 30 -i frame_%06d.png -c:v libx264 -pix_fmt yuv420p output_30fps.mp4
+```
+
+The complete animation (1440 frames) creates a seamless loop suitable for continuous playback.
 
 ## Controls
 
@@ -81,7 +118,10 @@ Each model displays its looping animation twice (2 × 640 frames = 1280 frames =
 - Point smoothing enabled for better visual quality
 - Depth testing enabled for proper 3D rendering
 - All models centered at origin (0, 0, 0)
-- Camera orbits at distance of 10 units from center
+- Fixed camera position for consistent framing across all frames
 - Coordinate export uses `gluProject` to convert 3D world coordinates to 2D screen coordinates
-- Export outputs x,y coordinates for all 64 vertices to console every 10 frames
-- Each model's animation is designed to loop seamlessly in 640 frames
+- Export outputs x,y coordinates for all 64 vertices to console every frame
+- Each model's animation is designed to loop seamlessly in 180 frames
+- Object rotation is independent from morphing - ensures seamless loops
+- Rotation: 360° per 180 frames (2° per frame at 10 FPS)
+- PPM format used for frame export (easily convertible to PNG/MP4)
