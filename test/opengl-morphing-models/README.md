@@ -10,6 +10,12 @@ A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 
 
 - **Looping Animation**: Each model's animation loops in 180 frames (18 seconds at 10 FPS) and plays 3 times before morphing to the next model
 
+- **Multi-Axis Rotation**: Objects rotate around Y, X, and Z axes simultaneously for dynamic movement
+  - Y-axis: 360° per 180 frames (1 full rotation)
+  - X-axis: 720° per 180 frames (2 full rotations)
+  - Z-axis: 360° per 180 frames (1 full rotation)
+  - All rotations complete in 180 frames for perfect seamless looping
+
 - **Smooth Morphing**: After 3 loops, the model smoothly morphs into the next model over 180 frames (18 seconds)
 
 - **GL_POINTS Rendering**: All models are rendered using OpenGL point primitives (pixel-based mesh)
@@ -123,5 +129,9 @@ The complete animation (1440 frames) creates a seamless loop suitable for contin
 - Export outputs x,y coordinates for all 64 vertices to console every frame
 - Each model's animation is designed to loop seamlessly in 180 frames
 - Object rotation is independent from morphing - ensures seamless loops
-- Rotation: 360° per 180 frames (2° per frame at 10 FPS)
+- Multi-axis rotation for dynamic movement:
+  - Y-axis: 360° per 180 frames (1 full rotation, 2° per frame)
+  - X-axis: 720° per 180 frames (2 full rotations, 4° per frame)
+  - Z-axis: 360° per 180 frames (1 full rotation, 2° per frame)
+- All rotation angles align perfectly at frame 0 and frame 180 for seamless looping
 - PPM format used for frame export (easily convertible to PNG/MP4)

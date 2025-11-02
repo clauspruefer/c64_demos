@@ -249,8 +249,13 @@ void display() {
         rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
     }
     
-    // Rotate the model around Y axis
+    // Multi-axis rotation - all axes complete full rotations in 180 frames for seamless looping
+    // Y-axis: 1 full rotation (360°) in 180 frames
     glRotatef(rotationAngle, 0.0, 1.0, 0.0);
+    // X-axis: 2 full rotations (720°) in 180 frames for more dynamic movement
+    glRotatef(rotationAngle * 2.0f, 1.0, 0.0, 0.0);
+    // Z-axis: 1 full rotation (360°) in 180 frames
+    glRotatef(rotationAngle, 0.0, 0.0, 1.0);
     
     // Update and draw current model
     Models::update(frameCounter);
