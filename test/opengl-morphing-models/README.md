@@ -81,7 +81,7 @@ The animation cycles through the models in this order:
 
 Each model displays its looping animation three times (3 × 180 frames = 540 frames = 54 seconds), then smoothly morphs into the next model during 180 frames (18 seconds).
 
-The rotation animation is separate from the morphing animation - objects rotate 360° per loop (180 frames), making each loop seamless and exportable as a loopable video segment.
+The rotation animation is separate from the morphing animation - objects rotate around multiple axes (Y, X, and Z) per loop (180 frames), making each loop seamless and exportable as a loopable video segment. Rotation speeds: Y-axis (360°), X-axis (252°), Z-axis (180°) per 180-frame loop.
 
 ## Video Export
 
@@ -123,5 +123,8 @@ The complete animation (1440 frames) creates a seamless loop suitable for contin
 - Export outputs x,y coordinates for all 64 vertices to console every frame
 - Each model's animation is designed to loop seamlessly in 180 frames
 - Object rotation is independent from morphing - ensures seamless loops
-- Rotation: 360° per 180 frames (2° per frame at 10 FPS)
+- Multi-axis rotation: Objects rotate around Y, X, and Z axes simultaneously
+  - Y-axis: 360° per 180 frames (2° per frame)
+  - X-axis: 252° per 180 frames (1.4° per frame) - 0.7× Y speed
+  - Z-axis: 180° per 180 frames (1° per frame) - 0.5× Y speed
 - PPM format used for frame export (easily convertible to PNG/MP4)
