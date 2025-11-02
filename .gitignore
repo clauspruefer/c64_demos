@@ -14,6 +14,9 @@ __pycache__/
 demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
+test/opengl-morphing-models/frame_*.ppm
+test/opengl-morphing-models/frame_*.png
+test/opengl-morphing-models/coordinates_*.txt
 
 # Build artifacts
 *.o
@@ -23,6 +26,8 @@ tools/mandelbrot-zoom/test_frames/
 # OpenGL demo executables
 demos/cubism/part3/eval/opengl-rotating-cube-grid-cpp/opengl-rotating-cube-grid
 demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
+test/opengl-morphing-models/opengl-morphing-models
+test/opengl-donut-accelerator/opengl-textured-rotating-donut
 
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
