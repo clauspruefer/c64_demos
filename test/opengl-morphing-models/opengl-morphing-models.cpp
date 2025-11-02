@@ -17,10 +17,10 @@ using namespace std;
 
 static const int FPS = 10;  // 10 frames per second
 static const int NUM_VERTICES = 64;
-static const int FRAMES_PER_LOOP = 180;  // Each animation loops in 180 frames
+static const int FRAMES_PER_LOOP = 120;  // Each animation loops in 120 frames
 static const int LOOPS_BEFORE_MORPH = 3;  // Loop 3 times before morphing
-static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 540 frames
-static const int MORPH_DURATION = 180;  // 180 frames morph transition
+static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 360 frames
+static const int MORPH_DURATION = 120;  // 120 frames morph transition
 static const int EXPORT_INTERVAL = 1;  // Export every frame for PNG sequence
 
 static int frameCounter = 0;
@@ -135,30 +135,53 @@ namespace Models {
     
     // Update current model based on time (morphing logic)
     void update(int frame) {
-        int totalFrames = 2 * FRAMES_PER_MODEL;  // 2 models total
+        // Total animation cycle: model1 loops + morph + model2 loops + morph
+        int totalFrames = 2 * (FRAMES_PER_MODEL + MORPH_DURATION);
         frame = frame % totalFrames;
         
-        int modelIndex = frame / FRAMES_PER_MODEL;
-        int frameInModel = frame % FRAMES_PER_MODEL;
+        // Determine which phase we're in
+        int firstModelEnd = FRAMES_PER_MODEL;
+        int firstMorphEnd = FRAMES_PER_MODEL + MORPH_DURATION;
+        int secondModelEnd = FRAMES_PER_MODEL + MORPH_DURATION + FRAMES_PER_MODEL;
         
-        // Determine which models to interpolate between
         const vector<Vertex>* fromModel;
         const vector<Vertex>* toModel;
         float morphProgress = 0.0f;
+        int frameInModel = 0;
+        int modelIndex = 0;
         
-        // Select models based on current time (only 2 models now)
-        switch (modelIndex) {
-            case 0: fromModel = &model1; toModel = &model2; break;
-            case 1: fromModel = &model2; toModel = &model1; break;
-            default: fromModel = &model1; toModel = &model1; break;
-        }
-        
-        // Calculate morph progress during last 2 seconds of display
-        if (frameInModel >= FRAMES_PER_MODEL - MORPH_DURATION) {
-            int morphFrame = frameInModel - (FRAMES_PER_MODEL - MORPH_DURATION);
+        if (frame < firstModelEnd) {
+            // First model looping
+            fromModel = &model1;
+            toModel = &model1;
+            morphProgress = 0.0f;
+            frameInModel = frame;
+            modelIndex = 0;
+        } else if (frame < firstMorphEnd) {
+            // Morphing from model1 to model2
+            fromModel = &model1;
+            toModel = &model2;
+            int morphFrame = frame - firstModelEnd;
             morphProgress = (float)morphFrame / (float)MORPH_DURATION;
-            // Smooth interpolation using smoothstep
             morphProgress = morphProgress * morphProgress * (3.0f - 2.0f * morphProgress);
+            frameInModel = FRAMES_PER_MODEL; // For display purposes
+            modelIndex = 0;
+        } else if (frame < secondModelEnd) {
+            // Second model looping
+            fromModel = &model2;
+            toModel = &model2;
+            morphProgress = 0.0f;
+            frameInModel = frame - firstMorphEnd;
+            modelIndex = 1;
+        } else {
+            // Morphing from model2 to model1
+            fromModel = &model2;
+            toModel = &model1;
+            int morphFrame = frame - secondModelEnd;
+            morphProgress = (float)morphFrame / (float)MORPH_DURATION;
+            morphProgress = morphProgress * morphProgress * (3.0f - 2.0f * morphProgress);
+            frameInModel = FRAMES_PER_MODEL; // For display purposes
+            modelIndex = 1;
         }
         
         // Interpolate vertices
@@ -174,7 +197,7 @@ namespace Models {
             int frameInLoop = frameInModel % FRAMES_PER_LOOP;
             cout << "Frame: " << frame 
                  << " | Model: " << (modelIndex + 1) 
-                 << " | Loop: " << loopNum << "/2"
+                 << " | Loop: " << loopNum << "/3"
                  << " | Frame in loop: " << frameInLoop
                  << " | Morph: " << (int)(morphProgress * 100) << "%" << endl;
         }
@@ -231,26 +254,36 @@ void display() {
     
     // Calculate rotation angle based on frame number within loop
     // This makes the rotation independent from morphing
-    int totalFrames = 2 * FRAMES_PER_MODEL;  // 2 models total
+    int totalFrames = 2 * (FRAMES_PER_MODEL + MORPH_DURATION);
     int currentFrame = frameCounter % totalFrames;
-    int frameInModel = currentFrame % FRAMES_PER_MODEL;
     
-    // Determine if we're in morph phase or loop phase
-    bool inMorphPhase = frameInModel >= FRAMES_PER_MODEL - MORPH_DURATION;
+    // Determine which phase and calculate rotation
+    int firstModelEnd = FRAMES_PER_MODEL;
+    int firstMorphEnd = FRAMES_PER_MODEL + MORPH_DURATION;
+    int secondModelEnd = FRAMES_PER_MODEL + MORPH_DURATION + FRAMES_PER_MODEL;
     
     float rotationAngle;
-    if (inMorphPhase) {
-        // During morph, continue rotation from last loop
-        int morphFrame = frameInModel - (FRAMES_PER_MODEL - MORPH_DURATION);
-        rotationAngle = 360.0f + (360.0f * morphFrame / (float)MORPH_DURATION);
-    } else {
-        // During loop phase, rotate based on frame within loop
-        int loopFrame = frameInModel % FRAMES_PER_LOOP;
+    if (currentFrame < firstModelEnd) {
+        // First model looping - rotate based on frame within loops
+        int loopFrame = currentFrame % FRAMES_PER_LOOP;
         rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
+    } else if (currentFrame < firstMorphEnd) {
+        // First morph - continue rotating
+        int morphFrame = currentFrame - firstModelEnd;
+        rotationAngle = 360.0f * morphFrame / (float)MORPH_DURATION;
+    } else if (currentFrame < secondModelEnd) {
+        // Second model looping
+        int frameInSecondModel = currentFrame - firstMorphEnd;
+        int loopFrame = frameInSecondModel % FRAMES_PER_LOOP;
+        rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
+    } else {
+        // Second morph - continue rotating
+        int morphFrame = currentFrame - secondModelEnd;
+        rotationAngle = 360.0f * morphFrame / (float)MORPH_DURATION;
     }
     
     // Rotate the model around multiple axes for more dynamic animation
-    // All rotations complete 360° in 180 frames for seamless looping
+    // All rotations complete 360° in 120 frames for seamless looping
     glRotatef(rotationAngle, 0.0, 1.0, 0.0);  // Rotate around Y axis
     glRotatef(rotationAngle * 0.7f, 1.0, 0.0, 0.0);  // Rotate around X axis (slower)
     glRotatef(rotationAngle * 0.5f, 0.0, 0.0, 1.0);  // Rotate around Z axis (even slower)

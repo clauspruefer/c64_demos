@@ -8,16 +8,16 @@ A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 
   1. **Torus** - Pink/purple donut shape
   2. **Star** - Rainbow-colored spiky star shape
 
-- **Looping Animation**: Each model's animation loops in 180 frames (18 seconds at 10 FPS) and plays 3 times before morphing to the next model
+- **Looping Animation**: Each model's animation loops in 120 frames (12 seconds at 10 FPS) and plays 3 times before morphing to the next model
 
-- **Smooth Morphing**: After 3 loops, the model smoothly morphs into the next model over 180 frames (18 seconds)
+- **Smooth Morphing**: After 3 loops, the model smoothly morphs into the next model over 120 frames (12 seconds)
 
 - **GL_POINTS Rendering**: All models are rendered using OpenGL point primitives (pixel-based mesh)
 
 - **Frame Export**: Exports every frame as PPM image for video production
-  - 180 frames per loop × 3 loops = 540 frames per model
-  - 180 frames for morph transition
-  - Total: 1440 frames for complete animation cycle (torus loops → morph → star loops → morph → repeat)
+  - 120 frames per loop × 3 loops = 360 frames per model
+  - 120 frames for morph transition
+  - Total: 960 frames for complete animation cycle (torus loops → morph → star loops → morph → repeat)
 
 - **Coordinate Export**: Exports projected screen coordinates (x, y) every frame using `gluProject`
   - Output printed to console in real-time
@@ -59,15 +59,15 @@ Or directly:
 
 - **Total Vertices**: 64 per model
 - **Frame Rate**: 10 FPS
-- **Frames per Loop**: 180 frames (18 seconds)
-- **Loops Before Morph**: 3 (total 54 seconds per model)
-- **Morph Duration**: 180 frames (18 seconds)
-- **Total Animation Cycle**: 144 seconds (2 minutes 24 seconds)
-  - Model 1: 540 frames (54 seconds)
-  - Morph 1→2: 180 frames (18 seconds)
-  - Model 2: 540 frames (54 seconds)
-  - Morph 2→1: 180 frames (18 seconds)
-  - Total: 1440 frames
+- **Frames per Loop**: 120 frames (12 seconds)
+- **Loops Before Morph**: 3 (total 36 seconds per model)
+- **Morph Duration**: 120 frames (12 seconds)
+- **Total Animation Cycle**: 96 seconds (1 minute 36 seconds)
+  - Model 1: 360 frames (36 seconds)
+  - Morph 1→2: 120 frames (12 seconds)
+  - Model 2: 360 frames (36 seconds)
+  - Morph 2→1: 120 frames (12 seconds)
+  - Total: 960 frames
 - **Rendering Mode**: GL_POINTS with point size of 5.0
 - **Frame Export**: Every frame saved as PPM (convert to PNG with ImageMagick)
 - **Camera**: Fixed at (0, 0, 10) looking at origin
@@ -75,13 +75,13 @@ Or directly:
 ## Animation Sequence
 
 The animation cycles through the models in this order:
-1. Torus (loops 3×180 frames = 540 frames) → Morph to Star (180 frames)
-2. Star (loops 3×180 frames = 540 frames) → Morph to Torus (180 frames)
+1. Torus (loops 3×120 frames = 360 frames) → Morph to Star (120 frames)
+2. Star (loops 3×120 frames = 360 frames) → Morph to Torus (120 frames)
 ... and repeats
 
-Each model displays its looping animation three times (3 × 180 frames = 540 frames = 54 seconds), then smoothly morphs into the next model during 180 frames (18 seconds).
+Each model displays its looping animation three times (3 × 120 frames = 360 frames = 36 seconds), then smoothly morphs into the next model during 120 frames (12 seconds).
 
-The rotation animation is separate from the morphing animation - objects rotate around multiple axes (Y, X, and Z) per loop (180 frames), making each loop seamless and exportable as a loopable video segment. Rotation speeds: Y-axis (360°), X-axis (252°), Z-axis (180°) per 180-frame loop.
+The rotation animation is separate from the morphing animation - objects rotate around multiple axes (Y, X, and Z) per loop (120 frames), making each loop seamless and exportable as a loopable video segment. Rotation speeds: Y-axis (360°), X-axis (252°), Z-axis (180°) per 120-frame loop.
 
 ## Video Export
 
@@ -106,7 +106,7 @@ ffmpeg -framerate 10 -i frame_%06d.png -c:v libx264 -pix_fmt yuv420p output.mp4
 ffmpeg -framerate 30 -i frame_%06d.png -c:v libx264 -pix_fmt yuv420p output_30fps.mp4
 ```
 
-The complete animation (1440 frames) creates a seamless loop suitable for continuous playback.
+The complete animation (960 frames) creates a seamless loop suitable for continuous playback.
 
 ## Controls
 
@@ -121,10 +121,11 @@ The complete animation (1440 frames) creates a seamless loop suitable for contin
 - Fixed camera position for consistent framing across all frames
 - Coordinate export uses `gluProject` to convert 3D world coordinates to 2D screen coordinates
 - Export outputs x,y coordinates for all 64 vertices to console every frame
-- Each model's animation is designed to loop seamlessly in 180 frames
+- Each model's animation is designed to loop seamlessly in 120 frames
 - Object rotation is independent from morphing - ensures seamless loops
+- Morphing happens as a separate phase AFTER the loops complete
 - Multi-axis rotation: Objects rotate around Y, X, and Z axes simultaneously
-  - Y-axis: 360° per 180 frames (2° per frame)
-  - X-axis: 252° per 180 frames (1.4° per frame) - 0.7× Y speed
-  - Z-axis: 180° per 180 frames (1° per frame) - 0.5× Y speed
+  - Y-axis: 360° per 120 frames (3° per frame)
+  - X-axis: 252° per 120 frames (2.1° per frame) - 0.7× Y speed
+  - Z-axis: 180° per 120 frames (1.5° per frame) - 0.5× Y speed
 - PPM format used for frame export (easily convertible to PNG/MP4)
