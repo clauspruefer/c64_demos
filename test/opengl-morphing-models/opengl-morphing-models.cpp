@@ -17,10 +17,10 @@ using namespace std;
 
 static const int FPS = 10;  // 10 frames per second
 static const int NUM_VERTICES = 64;
-static const int FRAMES_PER_LOOP = 120;  // Each animation loops in 120 frames
+static const int FRAMES_PER_LOOP = 180;  // Each animation loops in 180 frames
 static const int LOOPS_BEFORE_MORPH = 3;  // Loop 3 times before morphing
-static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 360 frames
-static const int MORPH_DURATION = 120;  // 120 frames morph transition
+static const int FRAMES_PER_MODEL = FRAMES_PER_LOOP * LOOPS_BEFORE_MORPH;  // 540 frames
+static const int MORPH_DURATION = 180;  // 180 frames morph transition
 static const int EXPORT_INTERVAL = 1;  // Export every frame for PNG sequence
 
 static int frameCounter = 0;
@@ -133,32 +133,39 @@ namespace Models {
         return result;
     }
     
-    // Update current model based on time (no morphing, just switching)
+    // Update current model based on time (morphing logic)
     void update(int frame) {
-        // Total animation cycle: model1 loops + model2 loops
-        int totalFrames = 2 * FRAMES_PER_MODEL;
+        int totalFrames = 2 * FRAMES_PER_MODEL;  // 2 models total
         frame = frame % totalFrames;
         
-        const vector<Vertex>* currentModelSource;
-        int frameInModel = 0;
-        int modelIndex = 0;
+        int modelIndex = frame / FRAMES_PER_MODEL;
+        int frameInModel = frame % FRAMES_PER_MODEL;
         
-        if (frame < FRAMES_PER_MODEL) {
-            // First model looping
-            currentModelSource = &model1;
-            frameInModel = frame;
-            modelIndex = 0;
-        } else {
-            // Second model looping
-            currentModelSource = &model2;
-            frameInModel = frame - FRAMES_PER_MODEL;
-            modelIndex = 1;
+        // Determine which models to interpolate between
+        const vector<Vertex>* fromModel;
+        const vector<Vertex>* toModel;
+        float morphProgress = 0.0f;
+        
+        // Select models based on current time (only 2 models now)
+        switch (modelIndex) {
+            case 0: fromModel = &model1; toModel = &model2; break;
+            case 1: fromModel = &model2; toModel = &model1; break;
+            default: fromModel = &model1; toModel = &model1; break;
         }
         
-        // Copy vertices (no interpolation needed)
+        // Calculate morph progress during last 2 seconds of display
+        if (frameInModel >= FRAMES_PER_MODEL - MORPH_DURATION) {
+            int morphFrame = frameInModel - (FRAMES_PER_MODEL - MORPH_DURATION);
+            morphProgress = (float)morphFrame / (float)MORPH_DURATION;
+            // Smooth interpolation using smoothstep
+            morphProgress = morphProgress * morphProgress * (3.0f - 2.0f * morphProgress);
+        }
+        
+        // Interpolate vertices
         currentModel.clear();
         for (int i = 0; i < NUM_VERTICES; i++) {
-            currentModel.push_back((*currentModelSource)[i]);
+            Vertex v = lerp((*fromModel)[i], (*toModel)[i], morphProgress);
+            currentModel.push_back(v);
         }
         
         // Debug output every 60 frames (once per second)
@@ -167,8 +174,9 @@ namespace Models {
             int frameInLoop = frameInModel % FRAMES_PER_LOOP;
             cout << "Frame: " << frame 
                  << " | Model: " << (modelIndex + 1) 
-                 << " | Loop: " << loopNum << "/3"
-                 << " | Frame in loop: " << frameInLoop << endl;
+                 << " | Loop: " << loopNum << "/2"
+                 << " | Frame in loop: " << frameInLoop
+                 << " | Morph: " << (int)(morphProgress * 100) << "%" << endl;
         }
     }
     
@@ -221,25 +229,28 @@ void display() {
     
     glPushMatrix();
     
-    // Calculate rotation angle for seamless looping
-    // Frames 1-120 complete one full 360° rotation
-    // Frame 1 = Frame 121 = 0°, Frame 120 = 357°
-    int totalFrames = 2 * FRAMES_PER_MODEL;  // 720 frames total (no morphing)
+    // Calculate rotation angle based on frame number within loop
+    // This makes the rotation independent from morphing
+    int totalFrames = 2 * FRAMES_PER_MODEL;  // 2 models total
     int currentFrame = frameCounter % totalFrames;
+    int frameInModel = currentFrame % FRAMES_PER_MODEL;
     
-    // Adjust frame numbering: treat frame 0 as frame 120 of previous cycle
-    // This makes frames 1-120, 121-240, etc. each complete one full rotation
-    int adjustedFrame = (currentFrame == 0) ? 120 : currentFrame;
-    int loopPosition = ((adjustedFrame - 1) % FRAMES_PER_LOOP);
+    // Determine if we're in morph phase or loop phase
+    bool inMorphPhase = frameInModel >= FRAMES_PER_MODEL - MORPH_DURATION;
     
-    // Calculate rotation angle - frames 1-120 span 0° to 357° (completing 360° loop)
-    float rotationAngle = 360.0f * (float)loopPosition / (float)FRAMES_PER_LOOP;
+    float rotationAngle;
+    if (inMorphPhase) {
+        // During morph, continue rotation from last loop
+        int morphFrame = frameInModel - (FRAMES_PER_MODEL - MORPH_DURATION);
+        rotationAngle = 360.0f + (360.0f * morphFrame / (float)MORPH_DURATION);
+    } else {
+        // During loop phase, rotate based on frame within loop
+        int loopFrame = frameInModel % FRAMES_PER_LOOP;
+        rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
+    }
     
-    // Rotate the model around multiple axes for more dynamic animation
-    // Each axis completes its rotation cycle in FRAMES_PER_LOOP (120) frames
-    glRotatef(rotationAngle, 0.0, 1.0, 0.0);  // Y axis: 360° per 120 frames
-    glRotatef(rotationAngle * 0.7f, 1.0, 0.0, 0.0);  // X axis: 252° per 120 frames  
-    glRotatef(rotationAngle * 0.5f, 0.0, 0.0, 1.0);  // Z axis: 180° per 120 frames
+    // Rotate the model around Y axis
+    glRotatef(rotationAngle, 0.0, 1.0, 0.0);
     
     // Update and draw current model
     Models::update(frameCounter);
@@ -326,19 +337,22 @@ void init() {
     // Generate all models
     Models::generateAll();
     
-    cout << "\n=== 3D Rotating Models Demo ===" << endl;
+    cout << "\n=== 3D Morphing Models Demo ===" << endl;
     cout << "FPS: " << FPS << endl;
     cout << "Total vertices per model: " << NUM_VERTICES << endl;
     cout << "Frames per loop: " << FRAMES_PER_LOOP << " (" << (FRAMES_PER_LOOP / FPS) << " seconds)" << endl;
-    cout << "Loops per model: " << LOOPS_BEFORE_MORPH << endl;
+    cout << "Loops before morph: " << LOOPS_BEFORE_MORPH << endl;
     cout << "Display time per model: " << (FRAMES_PER_MODEL / FPS) << " seconds" << endl;
-    cout << "Total animation cycle: " << (2 * FRAMES_PER_MODEL / FPS) << " seconds" << endl;
-    cout << "Total frames for complete loop: " << (2 * FRAMES_PER_MODEL) << " frames" << endl;
+    cout << "Morph transition duration: " << MORPH_DURATION << " frames (" << (MORPH_DURATION / FPS) << " seconds)" << endl;
+    cout << "Total animation cycle: " << (2 * (FRAMES_PER_MODEL + MORPH_DURATION) / FPS) << " seconds" << endl;
+    cout << "Total frames for complete loop: " << (2 * (FRAMES_PER_MODEL + MORPH_DURATION)) << " frames" << endl;
     cout << "\nPNG Export: Saving every frame as PPM (convert to PNG with ImageMagick)" << endl;
     cout << "Camera: Fixed position (no zooming/orbiting)" << endl;
     cout << "\nModel sequence:" << endl;
     cout << "  1. Torus/Donut (pink/purple) - loops 3 times" << endl;
-    cout << "  2. Star (rainbow) - loops 3 times" << endl;
+    cout << "  2. Torus -> Star morph (180 frames)" << endl;
+    cout << "  3. Star (rainbow) - loops 3 times" << endl;
+    cout << "  4. Star -> Torus morph (180 frames)" << endl;
     cout << "================================\n" << endl;
 }
 
