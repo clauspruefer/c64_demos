@@ -252,41 +252,21 @@ void display() {
     
     glPushMatrix();
     
-    // Calculate rotation angle based on frame number within loop
-    // This makes the rotation independent from morphing
-    int totalFrames = 2 * (FRAMES_PER_MODEL + MORPH_DURATION);
+    // Calculate rotation angle based on frame number
+    // Rotation is continuous across the entire animation cycle for seamless looping
+    int totalFrames = 2 * (FRAMES_PER_MODEL + MORPH_DURATION);  // 960 frames total
     int currentFrame = frameCounter % totalFrames;
     
-    // Determine which phase and calculate rotation
-    int firstModelEnd = FRAMES_PER_MODEL;
-    int firstMorphEnd = FRAMES_PER_MODEL + MORPH_DURATION;
-    int secondModelEnd = FRAMES_PER_MODEL + MORPH_DURATION + FRAMES_PER_MODEL;
-    
-    float rotationAngle;
-    if (currentFrame < firstModelEnd) {
-        // First model looping - rotate based on frame within loops
-        int loopFrame = currentFrame % FRAMES_PER_LOOP;
-        rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
-    } else if (currentFrame < firstMorphEnd) {
-        // First morph - continue rotating
-        int morphFrame = currentFrame - firstModelEnd;
-        rotationAngle = 360.0f * morphFrame / (float)MORPH_DURATION;
-    } else if (currentFrame < secondModelEnd) {
-        // Second model looping
-        int frameInSecondModel = currentFrame - firstMorphEnd;
-        int loopFrame = frameInSecondModel % FRAMES_PER_LOOP;
-        rotationAngle = 360.0f * loopFrame / (float)FRAMES_PER_LOOP;
-    } else {
-        // Second morph - continue rotating
-        int morphFrame = currentFrame - secondModelEnd;
-        rotationAngle = 360.0f * morphFrame / (float)MORPH_DURATION;
-    }
+    // Calculate continuous rotation angle - one complete rotation per 120 frames
+    // Since total cycle is 960 frames, this gives us 8 complete rotations per cycle (960/120=8)
+    // This ensures frame 0 and frame 960 have the same rotation (0°)
+    float rotationAngle = 360.0f * (currentFrame % 120) / 120.0f;
     
     // Rotate the model around multiple axes for more dynamic animation
-    // All rotations complete 360° in 120 frames for seamless looping
-    glRotatef(rotationAngle, 0.0, 1.0, 0.0);  // Rotate around Y axis
-    glRotatef(rotationAngle * 0.7f, 1.0, 0.0, 0.0);  // Rotate around X axis (slower)
-    glRotatef(rotationAngle * 0.5f, 0.0, 0.0, 1.0);  // Rotate around Z axis (even slower)
+    // All rotations complete in multiples that align with the 960-frame cycle
+    glRotatef(rotationAngle, 0.0, 1.0, 0.0);  // Rotate around Y axis - 360° per 120 frames
+    glRotatef(rotationAngle * 0.7f, 1.0, 0.0, 0.0);  // Rotate around X axis - 252° per 120 frames
+    glRotatef(rotationAngle * 0.5f, 0.0, 0.0, 1.0);  // Rotate around Z axis - 180° per 120 frames
     
     // Update and draw current model
     Models::update(frameCounter);

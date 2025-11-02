@@ -81,7 +81,7 @@ The animation cycles through the models in this order:
 
 Each model displays its looping animation three times (3 × 120 frames = 360 frames = 36 seconds), then smoothly morphs into the next model during 120 frames (12 seconds).
 
-The rotation animation is separate from the morphing animation - objects rotate around multiple axes (Y, X, and Z) per loop (120 frames), making each loop seamless and exportable as a loopable video segment. Rotation speeds: Y-axis (360°), X-axis (252°), Z-axis (180°) per 120-frame loop.
+The rotation is continuous across the entire 960-frame animation cycle. Objects rotate at a constant speed (360° per 120 frames), completing 8 full rotations during the complete animation. This ensures frame 0 and frame 960 have identical rotation angles, making the animation perfectly loopable.
 
 ## Video Export
 
@@ -121,11 +121,12 @@ The complete animation (960 frames) creates a seamless loop suitable for continu
 - Fixed camera position for consistent framing across all frames
 - Coordinate export uses `gluProject` to convert 3D world coordinates to 2D screen coordinates
 - Export outputs x,y coordinates for all 64 vertices to console every frame
-- Each model's animation is designed to loop seamlessly in 120 frames
-- Object rotation is independent from morphing - ensures seamless loops
+- Rotation is continuous across entire 960-frame cycle for perfect looping
+- Objects complete 8 full rotations (8×120 frames = 960 frames) per animation cycle
 - Morphing happens as a separate phase AFTER the loops complete
 - Multi-axis rotation: Objects rotate around Y, X, and Z axes simultaneously
-  - Y-axis: 360° per 120 frames (3° per frame)
+  - Y-axis: 360° per 120 frames (3° per frame) - completes 8 times in 960 frames
   - X-axis: 252° per 120 frames (2.1° per frame) - 0.7× Y speed
   - Z-axis: 180° per 120 frames (1.5° per frame) - 0.5× Y speed
+- Frame 0 and frame 960 have identical rotation angles, ensuring seamless looping
 - PPM format used for frame export (easily convertible to PNG/MP4)
