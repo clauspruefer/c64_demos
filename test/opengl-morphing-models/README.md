@@ -27,6 +27,9 @@ A demonstration of 3D animation using GL_POINTS (pixel-based rendering) with 64 
 
 - **Coordinate Export**: Exports projected screen coordinates (x, y) every frame using `gluProject`
   - Output printed to console in real-time
+  - Also saved to files: `coordinates_000000.txt`, `coordinates_000001.txt`, etc.
+  - Format: `vertex[0]:x,y` on each line for all 64 vertices per frame
+  - Coordinate files are exported at the same time as PPM image frames
 
 - **Fixed Camera**: Camera at fixed position (no zooming or orbiting)
 
@@ -76,6 +79,7 @@ Or directly:
   - Total: 1440 frames
 - **Rendering Mode**: GL_POINTS with point size of 5.0
 - **Frame Export**: Every frame saved as PPM (convert to PNG with ImageMagick)
+- **Coordinate Export**: x,y coordinates for all 64 vertices saved to text files
 - **Camera**: Fixed at (0, 0, 10) looking at origin
 
 ## Animation Sequence
@@ -126,7 +130,9 @@ The complete animation (1440 frames) creates a seamless loop suitable for contin
 - All models centered at origin (0, 0, 0)
 - Fixed camera position for consistent framing across all frames
 - Coordinate export uses `gluProject` to convert 3D world coordinates to 2D screen coordinates
-- Export outputs x,y coordinates for all 64 vertices to console every frame
+- Export outputs x,y coordinates for all 64 vertices to console AND files every frame
+- Coordinate files: `coordinates_000000.txt` (one per frame, same numbering as PPM frames)
+- Each coordinate file contains 64 lines in format: `vertex[0]:x,y`
 - Each model's animation is designed to loop seamlessly in 180 frames
 - Object rotation is independent from morphing - ensures seamless loops
 - Multi-axis rotation for dynamic movement:

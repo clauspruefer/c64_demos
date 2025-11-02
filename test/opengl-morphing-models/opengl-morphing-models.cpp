@@ -274,6 +274,11 @@ void display() {
         
         GLdouble projectedCoords[NUM_VERTICES][3];
         
+        // Create coordinate export filename
+        stringstream coordFilename;
+        coordFilename << "coordinates_" << setfill('0') << setw(6) << globalFrameCounter << ".txt";
+        ofstream coordFile(coordFilename.str());
+        
         // Project all vertices to window coordinates
         for (int i = 0; i < NUM_VERTICES; i++) {
             gluProject(
@@ -290,7 +295,14 @@ void display() {
             cout << "Vertex " << i << " -> Window coords: (" 
                  << projectedCoords[i][0] << ", " 
                  << projectedCoords[i][1] << ")" << endl;
+            
+            // Write to file in requested format: vertex[i]:x,y
+            coordFile << "vertex[" << i << "]:" 
+                     << projectedCoords[i][0] << "," 
+                     << projectedCoords[i][1] << endl;
         }
+        
+        coordFile.close();
     }
     
     glPopMatrix();
