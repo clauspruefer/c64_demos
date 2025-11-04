@@ -17,6 +17,11 @@ tools/mandelbrot-zoom/test_frames/
 test/opengl-morphing-models/frame_*.ppm
 test/opengl-morphing-models/frame_*.png
 test/opengl-morphing-models/coordinates_*.txt
+test/chicken-explosion/frames/
+test/chicken-explosion/*.mp4
+
+# But keep sample frames
+!test/chicken-explosion/sample_*.png
 
 # Build artifacts
 *.o
