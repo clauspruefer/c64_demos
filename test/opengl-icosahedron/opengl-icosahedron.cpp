@@ -145,7 +145,7 @@ namespace Icosahedron {
         // Draw dark colored edges between vertices
         glDisable(GL_LIGHTING);  // Disable lighting for edges
         glColor3f(0.1f, 0.1f, 0.15f);  // Dark blue-gray color
-        glLineWidth(1.5f);
+        glLineWidth(1.0f);
         
         // Draw edges for each face
         glBegin(GL_LINES);
@@ -177,9 +177,9 @@ void setupLighting() {
     
     // Light 0: Left front position
     GLfloat light0_position[] = {-5.0f, 3.0f, 5.0f, 1.0f};
-    GLfloat light0_ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    GLfloat light0_diffuse[] = {0.336f, 0.336f, 0.336f, 1.0f};  // Reduced by additional 30%
-    GLfloat light0_specular[] = {0.42f, 0.42f, 0.42f, 1.0f};    // Reduced by additional 30%
+    GLfloat light0_ambient[] = {0.4f, 0.4f, 0.2f, 1.0f};
+    GLfloat light0_diffuse[] = {0.736f, 0.936f, 0.436f, 1.0f};
+    GLfloat light0_specular[] = {0.82f, 0.82f, 0.92f, 1.0f};
     
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
     glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
@@ -189,8 +189,8 @@ void setupLighting() {
     // Light 1: Right front position
     GLfloat light1_position[] = {5.0f, 3.0f, 5.0f, 1.0f};
     GLfloat light1_ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat light1_diffuse[] = {0.3672f, 0.3672f, 0.3672f, 1.0f};  // Increased by 20%
-    GLfloat light1_specular[] = {0.4896f, 0.4896f, 0.4896f, 1.0f}; // Increased by 20%
+    GLfloat light1_diffuse[] = {0.6672f, 0.6672f, 0.6672f, 1.0f};
+    GLfloat light1_specular[] = {0.8896f, 0.8896f, 0.4896f, 1.0f};
     
     glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
     glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
@@ -273,7 +273,7 @@ void init() {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(320, 200);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("OpenGL Animated Icosahedron - Realistic Shaded");
     
