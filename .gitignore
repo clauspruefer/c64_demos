@@ -14,6 +14,7 @@ __pycache__/
 demos/floodlights/frames/
 tools/mandelbrot-zoom/frames/
 tools/mandelbrot-zoom/test_frames/
+tools/cow-fart-animation/frames/
 
 # Build artifacts
 *.o
@@ -25,9 +26,17 @@ demos/cubism/part3/eval/opengl-rotating-cube-grid-cpp/opengl-rotating-cube-grid
 demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
 test/3d-cube-animation/3d-cube-animation
 test/opengl-donut-accelerator/donut-accelerator
+test/opengl-morphing-models/opengl-morphing-models
+test/opengl-donut-accelerator/opengl-textured-rotating-donut
 
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
+
+# Three spheres display executable
+tools/three-spheres/three-spheres
+
+# Three spheres vertex export files
+tools/three-spheres/vertices.txt
 
 # Editor backup files
 *~
