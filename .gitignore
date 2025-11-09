@@ -30,6 +30,12 @@ test/opengl-donut-accelerator/opengl-textured-rotating-donut
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
 
+# Three spheres display executable
+tools/three-spheres/three-spheres
+
+# Three spheres vertex export files
+tools/three-spheres/vertices.txt
+
 # Editor backup files
 *~
 *.swp
