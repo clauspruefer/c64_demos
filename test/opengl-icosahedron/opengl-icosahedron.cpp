@@ -20,7 +20,7 @@ static float rotateZ = 0.0f;
 namespace Icosahedron {
     // Golden ratio constant
     const float PHI = (1.0f + sqrt(5.0f)) / 2.0f;
-    const float SCALE = 1.5f;  // Scale factor for better visibility
+    const float SCALE = 1.2f;  // Scale factor for better visibility (reduced by 20%)
     
     // 12 vertices of an icosahedron
     const int NUM_VERTICES = 12;
@@ -153,8 +153,8 @@ void setupLighting() {
     // Light 0: Left front position
     GLfloat light0_position[] = {-5.0f, 3.0f, 5.0f, 1.0f};
     GLfloat light0_ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    GLfloat light0_diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
-    GLfloat light0_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat light0_diffuse[] = {0.48f, 0.48f, 0.48f, 1.0f};  // Reduced by 40%
+    GLfloat light0_specular[] = {0.6f, 0.6f, 0.6f, 1.0f};    // Reduced by 40%
     
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
     glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
@@ -164,8 +164,8 @@ void setupLighting() {
     // Light 1: Right front position
     GLfloat light1_position[] = {5.0f, 3.0f, 5.0f, 1.0f};
     GLfloat light1_ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat light1_diffuse[] = {0.6f, 0.6f, 0.6f, 1.0f};
-    GLfloat light1_specular[] = {0.8f, 0.8f, 0.8f, 1.0f};
+    GLfloat light1_diffuse[] = {0.36f, 0.36f, 0.36f, 1.0f};  // Reduced by 40%
+    GLfloat light1_specular[] = {0.48f, 0.48f, 0.48f, 1.0f}; // Reduced by 40%
     
     glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
     glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
