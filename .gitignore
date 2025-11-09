@@ -28,6 +28,7 @@ test/3d-cube-animation/3d-cube-animation
 test/opengl-donut-accelerator/donut-accelerator
 test/opengl-morphing-models/opengl-morphing-models
 test/opengl-donut-accelerator/opengl-textured-rotating-donut
+test/opengl-icosahedron/opengl-icosahedron
 
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom
