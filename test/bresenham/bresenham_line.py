@@ -30,9 +30,6 @@ class LineDrawer:
         """
         Draw a line from (x0, y0) to (x1, y1) using Bresenham's algorithm
         
-        This is the general Bresenham algorithm that works for all octants.
-        Similar to the classic formulation: p = 2*dy - dx, but handles all directions.
-        
         Args:
             x0: Starting x coordinate
             y0: Starting y coordinate
@@ -43,40 +40,37 @@ class LineDrawer:
         # Convert to integers
         x0, y0, x1, y1 = int(x0), int(y0), int(x1), int(y1)
         
-        # Calculate absolute differences
+        # Calculate differences
         dx = abs(x1 - x0)
         dy = abs(y1 - y0)
         
-        # Determine step direction for x and y
+        # Determine direction
         sx = 1 if x0 < x1 else -1
         sy = 1 if y0 < y1 else -1
         
-        # Initialize error term (decision parameter)
-        # This is equivalent to p = 2*dy - dx in the classic formulation
+        # Initialize error
         err = dx - dy
         
         # Current position
         x, y = x0, y0
         
-        # Draw line pixel by pixel
+        # Draw line
         while True:
             # Set pixel if within bounds
             if 0 <= x < self.width and 0 <= y < self.height:
                 self.pixels[x, y] = color
             
-            # Check if we've reached the end point
+            # Check if we've reached the end
             if x == x1 and y == y1:
                 break
             
-            # Calculate 2 * error for decision making
+            # Calculate error and adjust coordinates
             e2 = 2 * err
             
-            # Step in x direction if needed (when e2 > -dy)
             if e2 > -dy:
                 err -= dy
                 x += sx
             
-            # Step in y direction if needed (when e2 < dx)
             if e2 < dx:
                 err += dx
                 y += sy
