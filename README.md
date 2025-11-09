@@ -16,7 +16,7 @@ Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/cubism.
 ## 2. 3D Cube Animation
 A visually appealing OpenGL demonstration featuring a smoothly rotating 3D cube with dynamic color transitions. The cube rotates on all three axes with organic, varying speeds, and each face independently cycles through vibrant colors creating a mesmerizing rainbow effect.
 
-Link: https://github.com/clauspruefer/c64_demos/tree/main/demos/3d-cube-animation.
+Link: https://github.com/clauspruefer/c64_demos/tree/main/test/3d-cube-animation.
 
 # Useful External Links
 - [C64 Studio IDE](https://www.georg-rottensteiner.de/de/c64.html)
