@@ -141,6 +141,31 @@ namespace Icosahedron {
             }
         }
         glEnd();
+        
+        // Draw dark colored edges between vertices
+        glDisable(GL_LIGHTING);  // Disable lighting for edges
+        glColor3f(0.1f, 0.1f, 0.15f);  // Dark blue-gray color
+        glLineWidth(1.5f);
+        
+        // Draw edges for each face
+        glBegin(GL_LINES);
+        for (int i = 0; i < NUM_FACES; i++) {
+            // Draw the three edges of this triangular face
+            for (int j = 0; j < 3; j++) {
+                int v1 = faces[i][j];
+                int v2 = faces[i][(j + 1) % 3];
+                
+                glVertex3f(vertices[v1][0] * SCALE,
+                          vertices[v1][1] * SCALE,
+                          vertices[v1][2] * SCALE);
+                glVertex3f(vertices[v2][0] * SCALE,
+                          vertices[v2][1] * SCALE,
+                          vertices[v2][2] * SCALE);
+            }
+        }
+        glEnd();
+        
+        glEnable(GL_LIGHTING);  // Re-enable lighting
     }
 }
 
@@ -153,8 +178,8 @@ void setupLighting() {
     // Light 0: Left front position
     GLfloat light0_position[] = {-5.0f, 3.0f, 5.0f, 1.0f};
     GLfloat light0_ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-    GLfloat light0_diffuse[] = {0.48f, 0.48f, 0.48f, 1.0f};  // Reduced by 40%
-    GLfloat light0_specular[] = {0.6f, 0.6f, 0.6f, 1.0f};    // Reduced by 40%
+    GLfloat light0_diffuse[] = {0.336f, 0.336f, 0.336f, 1.0f};  // Reduced by additional 30%
+    GLfloat light0_specular[] = {0.42f, 0.42f, 0.42f, 1.0f};    // Reduced by additional 30%
     
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
     glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
@@ -164,8 +189,8 @@ void setupLighting() {
     // Light 1: Right front position
     GLfloat light1_position[] = {5.0f, 3.0f, 5.0f, 1.0f};
     GLfloat light1_ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat light1_diffuse[] = {0.36f, 0.36f, 0.36f, 1.0f};  // Reduced by 40%
-    GLfloat light1_specular[] = {0.48f, 0.48f, 0.48f, 1.0f}; // Reduced by 40%
+    GLfloat light1_diffuse[] = {0.306f, 0.306f, 0.306f, 1.0f};  // Reduced by additional 15%
+    GLfloat light1_specular[] = {0.408f, 0.408f, 0.408f, 1.0f}; // Reduced by additional 15%
     
     glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
     glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
