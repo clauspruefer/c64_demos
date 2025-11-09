@@ -189,8 +189,8 @@ void setupLighting() {
     // Light 1: Right front position
     GLfloat light1_position[] = {5.0f, 3.0f, 5.0f, 1.0f};
     GLfloat light1_ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat light1_diffuse[] = {0.306f, 0.306f, 0.306f, 1.0f};  // Reduced by additional 15%
-    GLfloat light1_specular[] = {0.408f, 0.408f, 0.408f, 1.0f}; // Reduced by additional 15%
+    GLfloat light1_diffuse[] = {0.3672f, 0.3672f, 0.3672f, 1.0f};  // Increased by 20%
+    GLfloat light1_specular[] = {0.4896f, 0.4896f, 0.4896f, 1.0f}; // Increased by 20%
     
     glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
     glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
