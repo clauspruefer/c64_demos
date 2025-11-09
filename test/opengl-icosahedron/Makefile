@@ -4,18 +4,27 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -O2
 LDFLAGS = -lGL -lGLU -lglut -lm
 
-TARGET = opengl-icosahedron
-SOURCE = opengl-icosahedron.cpp
+TARGET1 = opengl-icosahedron
+SOURCE1 = opengl-icosahedron.cpp
 
-all: $(TARGET)
+TARGET2 = opengl-icosahedron-glpoints
+SOURCE2 = opengl-icosahedron-glpoints.cpp
 
-$(TARGET): $(SOURCE)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SOURCE) $(LDFLAGS)
+all: $(TARGET1) $(TARGET2)
+
+$(TARGET1): $(SOURCE1)
+	$(CXX) $(CXXFLAGS) -o $(TARGET1) $(SOURCE1) $(LDFLAGS)
+
+$(TARGET2): $(SOURCE2)
+	$(CXX) $(CXXFLAGS) -o $(TARGET2) $(SOURCE2) $(LDFLAGS)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET1) $(TARGET2)
 
-run: $(TARGET)
-	./$(TARGET)
+run: $(TARGET1)
+	./$(TARGET1)
 
-.PHONY: all clean run
+run-glpoints: $(TARGET2)
+	./$(TARGET2)
+
+.PHONY: all clean run run-glpoints
