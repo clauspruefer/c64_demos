@@ -15,33 +15,11 @@ static const int FPS = 60;
 static GLfloat rotateAngle = 0.0f;
 static GLint rotateAngle2 = 0;
 
-//- Double Helix Namespace
 namespace DoubleHelix {
 
-    const int NUM_VERTICES = 18;
-    const int NUM_PYRAMID_APEXES = 6;
-
-    //- Double helix vertices: two intertwined ropes wrapping around cylinder
-    //- 9 vertices per strand, interleaved (strand1[0], strand2[0], strand1[1], strand2[1], ...)
-    //- Improved with larger radius (~8 units) and height (30 units) for better visibility
-    //- Reduced to 18 vertices total for C64 demo performance
-    GLint vertices[NUM_VERTICES][3] = {
-      {  8,  15,   0}, { -8,  15,   0}, 
-      { -7,  11,  -5}, {  7,  11,   5}, 
-      {  6,   8,   4}, { -6,   8,  -4}, 
-      { -5,   4,  -8}, {  5,   4,   8}, 
-      { -3,   0,   7}, {  3,   0,  -7}, 
-      {  2,  -4,  -9}, { -2,  -4,   9}, 
-      { -4,  -8,   6}, {  4,  -8,  -6}, 
-      {  8, -11,  -1}, { -8, -11,   1}, 
-      { -8, -15,   0}, {  8, -15,   0}
-    };
-
-    GLfloat vertexColors[NUM_VERTICES][3] = {
-      {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, 
-      {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, 
-      {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}
-    };
+    const int NUM_VERTICES = 32;
+    GLint vertices[NUM_VERTICES][3];
+    GLfloat vertexColors[NUM_VERTICES][3];
 
     void draw() {
       // Draw double helix vertices as points (stay in pixel draw mode - do NOT connect)
@@ -54,51 +32,93 @@ namespace DoubleHelix {
     }
 }
 
+void generateDoubleHelix() {
+
+  const float radius = 2.0f;
+  const float height = 30.0f;
+  const int pointsPerHelix = DoubleHelix::NUM_VERTICES/2;
+
+  int coordIndex = 0;
+
+  for (int i = 0; i < pointsPerHelix; i++) {
+
+      float t = (float)i / (float)(pointsPerHelix - 1);
+      float angle = t * 4.0f * M_PI;
+
+      DoubleHelix::vertices[coordIndex][0] = radius * cos(angle) *2;
+      DoubleHelix::vertices[coordIndex][1] = radius * sin(angle) *2;
+      DoubleHelix::vertices[coordIndex][2] = -height/2 + height * t *2;
+
+      DoubleHelix::vertexColors[coordIndex][0] = 1;
+      DoubleHelix::vertexColors[coordIndex][1] = 1;
+      DoubleHelix::vertexColors[coordIndex][2] = 1;
+
+      coordIndex += 1;
+  }
+
+  for (int i = 0; i < pointsPerHelix; i++) {
+
+      float t = (float)i / (float)(pointsPerHelix - 1);
+      float angle = t * 4.0f * M_PI + M_PI;
+
+      DoubleHelix::vertices[coordIndex][0] = radius * cos(angle) *2;
+      DoubleHelix::vertices[coordIndex][1] = radius * sin(angle) *2;
+      DoubleHelix::vertices[coordIndex][2] = -height/2 + height * t *2;
+
+      DoubleHelix::vertexColors[coordIndex][0] = 1;
+      DoubleHelix::vertexColors[coordIndex][1] = 1;
+      DoubleHelix::vertexColors[coordIndex][2] = 1;
+
+      coordIndex += 1;
+  }
+}
+
 void display() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glRotatef(rotateAngle, 0.0, 1.0, 0.0);
+    glRotatef(rotateAngle, 0.0, 1.0, rotateAngle);
 
     DoubleHelix::draw();
+
     // Increment by 11.25 degrees per frame for 32-frame loop (360/32 = 11.25)
+    rotateAngle += 2.25f;
+
+    /*
     rotateAngle += 11.25f;
     if (rotateAngle >= 360.0f) rotateAngle -= 360.0f;
-    
+    */
+
     GLdouble retX, retY, retZ;
 
     //- Get Pixel Data
     GLubyte pixels[3];
     glReadPixels(50, 50, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixels);
-    cout << "Pixel R:" << static_cast<int>(pixels[0]) << " G:"  << static_cast<int>(pixels[1]) << " B:" << static_cast<int>(pixels[2]) << endl;
+    //cout << "Pixel R:" << static_cast<int>(pixels[0]) << " G:"  << static_cast<int>(pixels[1]) << " B:" << static_cast<int>(pixels[2]) << endl;
 
     //- Project all double helix vertices to window coordinates using gluProject
     GLdouble modelview[16];
     GLdouble projection[16];
     GLint viewport[4];
-    
+
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
-    
+
     GLdouble projectedCoords[DoubleHelix::NUM_VERTICES][3];
-    
+
     for (int i = 0; i < DoubleHelix::NUM_VERTICES; i++) {
         gluProject(
-            (GLdouble)DoubleHelix::vertices[i][0], 
-            (GLdouble)DoubleHelix::vertices[i][1], 
+            (GLdouble)DoubleHelix::vertices[i][0],
+            (GLdouble)DoubleHelix::vertices[i][1],
             (GLdouble)DoubleHelix::vertices[i][2],
             modelview, 
-            projection, 
+            projection,
             viewport,
             &projectedCoords[i][0], 
             &projectedCoords[i][1], 
             &projectedCoords[i][2]
         );
-        cout << "Vertex " << i << " -> Window coords: (" 
-             << projectedCoords[i][0] << ", " 
-             << projectedCoords[i][1] << ", " 
-             << projectedCoords[i][2] << ")" << endl;
     }
 
     glPopMatrix();
@@ -135,9 +155,11 @@ void init() {
 }
 
 int main(int argc, char** argv) {
+  generateDoubleHelix();
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize(420, 2520);
+  //glutInitWindowSize(420, 2520);
+  glutInitWindowSize(42, 252);
   glutCreateWindow("Precalculated Double Helix C64 Demo");
   //glutFullScreen();
   glutReshapeFunc(reshape);
