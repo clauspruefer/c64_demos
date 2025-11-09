@@ -24,6 +24,8 @@ tools/cow-fart-animation/frames/
 # OpenGL demo executables
 demos/cubism/part3/eval/opengl-rotating-cube-grid-cpp/opengl-rotating-cube-grid
 demos/cubism/part3/eval/opengl-rotating-cylinder-sine-cpp/opengl-cylinder-helix
+test/3d-cube-animation/3d-cube-animation
+test/opengl-donut-accelerator/donut-accelerator
 test/opengl-morphing-models/opengl-morphing-models
 test/opengl-donut-accelerator/opengl-textured-rotating-donut
 
