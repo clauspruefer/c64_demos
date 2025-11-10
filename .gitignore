@@ -29,6 +29,7 @@ test/opengl-donut-accelerator/donut-accelerator
 test/opengl-morphing-models/opengl-morphing-models
 test/opengl-donut-accelerator/opengl-textured-rotating-donut
 test/opengl-icosahedron/opengl-icosahedron
+test/opengl-icosahedron/opengl-icosahedron-glpoints
 
 # Mandelbrot zoom generator executable
 tools/mandelbrot-zoom/generate_mandelbrot_zoom

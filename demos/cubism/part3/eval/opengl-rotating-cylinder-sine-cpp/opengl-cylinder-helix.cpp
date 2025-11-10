@@ -134,7 +134,7 @@ void timer(int v) {
   // Looking slightly downward from above to see the helix structure better
   gluLookAt(0.0, 35.0, 55.0,     // Eye position (slightly above, far back)
             0.0, 0.0, 0.0,       // Look at center of double helix
-            0.0, 4.0, 0.0);      // Up vector
+            0.0, -4.0, 0.0);      // Up vector
   glutPostRedisplay();
   glutTimerFunc(1000/FPS, timer, v);
 }

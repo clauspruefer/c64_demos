@@ -2,6 +2,23 @@
 
 A visually stunning OpenGL demonstration featuring a rotating icosahedron (20-faced polyhedron) with realistic shading and dual light sources.
 
+This directory contains two variants:
+1. **opengl-icosahedron.cpp** - Full rendering with shading and lighting
+2. **opengl-icosahedron-glpoints.cpp** - Simplified GL_POINTS mode with integer coordinates
+
+## Variants
+
+### 1. opengl-icosahedron (Original)
+- Full 3D rendering with triangular faces
+- Realistic shading with dual light sources
+- Float coordinates with golden ratio precision
+
+### 2. opengl-icosahedron-glpoints (New)
+- Renders only the 12 vertices using GL_POINTS mode
+- Uses integer coordinates (x, y, z)
+- No lighting/shading (points only)
+- Simpler visualization focusing on vertex positions
+
 ## Features
 
 - **Icosahedron Geometry**: Perfect 20-faced polyhedron with 12 vertices
@@ -44,17 +61,21 @@ sudo apt-get install freeglut3-dev
 
 ### Build
 ```bash
-make
+make                  # Build both variants
+make opengl-icosahedron              # Build original only
+make opengl-icosahedron-glpoints     # Build GL_POINTS variant only
 ```
 
 ### Run
 ```bash
-make run
+make run              # Run original variant
+make run-glpoints     # Run GL_POINTS variant
 ```
 
 Or directly:
 ```bash
 ./opengl-icosahedron
+./opengl-icosahedron-glpoints
 ```
 
 ### Clean
