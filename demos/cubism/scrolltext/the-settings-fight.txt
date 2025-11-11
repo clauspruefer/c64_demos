@@ -1,11 +1,12 @@
-The fight of the Jahrtausend: "General Settings" vs. "General Electrics"
+The Epic Battle of the Jahrhundert: "General Settings" vs. "General Electrics"
 
-General Settings tries to invoke an attack from its Gnome settings, but his OS is puzzled dont knowing where to get it from.
-"Are we running Wayland? In compatible xorg mode? Or Gnome with KDE settings in g-settingsd ... Try looking inside user /home/general/.config or
-was it /home/general/.settings..." -> Segmentation fault.
+General Settings attempts to invoke a devastating attack from its Gnome settings, but alas! His OS is utterly puzzled, frantically searching for the configuration files.
+"Are we running Wayland? Perhaps in compatible Xorg mode? Or is it Gnome with KDE settings masquerading as g-settingsd? Try looking inside /home/general/.config... or wait, was it /home/general/.settings? Maybe ~/.local/share? Oh dear..." --> SEGMENTATION FAULT. *BOOM!*
 
-That is General Electrics chance. Which car used to drive to work? "Tesla"? Oh noooo! Also Segmentation Fault,
-using the bluetooth inside the slum-zone wasnt the best idea.
+Ah-ha! This is General Electric's golden opportunity! But which car did he use to drive to work today? "Tesla"? Oh noooo! ALSO SEGMENTATION FAULT!
+Turns out, using Bluetooth in the slum-zone wasn't the brightest strategic decision. Who knew automotive software could be THIS fragile?
 
-An old general of the GDR appears, watching the fight. He takes out his Robotron computer, only containing the minimum requirements:
-"attack function" and "defend function" (non-parametrized). Boom, both Generals eliminated, job done. Simplicity wins.
+Suddenly, an old general from the GDR appears on the battlefield, calmly observing this magnificent disaster. He casually takes out his trusty Robotron computer - a machine containing only the bare minimum requirements:
+One "attack_function()" and one "defend_function()" (both gloriously non-parametrized, of course). BOOM! Both modern Generals eliminated in seconds. Job done. 
+
+The moral of the story? Simplicity wins. Always has. Always will.
