@@ -1,0 +1,11 @@
+The fight of the Jahrtausend: "General Settings" vs. "General Electrics"
+
+General Settings tries to invoke an attack from its Gnome settings, but his OS is puzzled dont knowing where to get it from.
+"Are we running Wayland? In compatible xorg mode? Or Gnome with KDE settings in g-settingsd ... Try looking inside user /home/general/.config or
+was it /home/general/.settings..." -> Segmentation fault.
+
+That is General Electrics chance. Which car used to drive to work? "Tesla"? Oh noooo! Also Segmentation Fault,
+using the bluetooth inside the slum-zone wasnt the best idea.
+
+An old general of the GDR appears, watching the fight. He takes out his Robotron computer, only containing the minimum requirements:
+"attack function" and "defend function" (non-parametrized). Boom, both Generals eliminated, job done. Simplicity wins.
