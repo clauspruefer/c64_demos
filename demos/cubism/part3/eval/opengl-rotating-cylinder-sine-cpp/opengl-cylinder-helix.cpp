@@ -81,10 +81,11 @@ void display() {
 
     DoubleHelix::draw();
 
-    // Increment by 11.25 degrees per frame for 32-frame loop (360/32 = 11.25)
-    rotateAngle += 2.25f;
+    // Increment by 4 degrees per frame for 90-frame loop (360/4 = 90.0)
+    rotateAngle += 4.0f;
 
     /*
+    // Increment by 11.25 degrees per frame for 32-frame loop (360/32 = 11.25)
     rotateAngle += 11.25f;
     if (rotateAngle >= 360.0f) rotateAngle -= 360.0f;
     */
